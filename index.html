@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>庫存儀表板｜倍樂生台北分公司</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --bg:#f4f6f9;--white:#fff;--border:#e2e6ed;--border2:#d0d5e0;
+  --text:#1a1f2e;--text2:#5a6278;--text3:#9aa0b4;
+  --blue:#3b82f6;--blue-bg:#eff6ff;--blue-dark:#1d4ed8;
+  --red:#dc2626;--red-bg:#fef2f2;
+  --orange:#ea580c;--orange-bg:#fff7ed;
+  --yellow:#d97706;--yellow-bg:#fffbeb;
+  --green:#16a34a;--green-bg:#f0fdf4;
+  --pink:#be185d;--pink-bg:#fdf2f8;
+  --teal:#065f46;--teal-bg:#ecfdf5;
+  --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 8px rgba(0,0,0,.04);
+  --radius:12px;
+  --mono:'DM Mono',monospace;--sans:'Noto Sans TC',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14px;line-height:1.5;}
+
+/* ── Header ── */
+.header{background:var(--white);border-bottom:1px solid var(--border);padding:0 24px;height:52px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.header-left{display:flex;align-items:center;gap:12px;}
+.logo{font-size:10px;color:var(--text3);letter-spacing:.12em;text-transform:uppercase;padding-right:12px;border-right:1px solid var(--border);font-family:var(--mono);}
+.header-title{font-size:15px;font-weight:700;}
+.header-right{display:flex;align-items:center;gap:10px;}
+.data-date{font-family:var(--mono);font-size:11px;color:var(--text2);background:#f8fafc;padding:4px 10px;border-radius:20px;border:1px solid var(--border);}
+.upload-btn{background:var(--blue);color:white;border:none;padding:6px 16px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:background .15s;}
+.upload-btn:hover{background:var(--blue-dark);}
+.upload-status{font-size:11px;font-family:var(--mono);padding:3px 10px;border-radius:20px;display:none;}
+.upload-status.ok{display:inline;color:var(--green);background:var(--green-bg);}
+.upload-status.err{display:inline;color:var(--red);background:var(--red-bg);}
+.upload-status.loading{display:inline;color:var(--blue);background:var(--blue-bg);}
+
+/* ── Nav ── */
+.nav-bar{background:var(--white);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:0;overflow-x:auto;}
+.nav-btn{padding:11px 18px;font-size:13px;font-weight:600;border:none;background:transparent;color:var(--text3);cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap;transition:all .15s;font-family:var(--sans);}
+.nav-btn:hover{color:var(--text2);}
+.nav-btn.active{color:var(--blue);border-bottom-color:var(--blue);}
+
+/* ── Pages ── */
+.page{display:none;padding:20px 24px;}
+.page.active{display:block;}
+
+/* ── No Data ── */
+.no-data{text-align:center;padding:80px 20px;color:var(--text3);}
+.no-data h3{font-size:18px;margin-bottom:8px;color:var(--text2);}
+.no-data p{font-size:13px;}
+.no-data .upload-hint{display:inline-flex;align-items:center;gap:8px;margin-top:20px;background:var(--blue-bg);color:var(--blue-dark);border:1px solid #bfdbfe;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:600;cursor:pointer;}
+
+/* ── Page Header ── */
+.page-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.page-title{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;}
+.result-count{font-size:12px;color:var(--text3);font-family:var(--mono);}
+
+/* ══════════════════════════════════════
+   P1: PRODUCT GRID
+══════════════════════════════════════ */
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:900px){.product-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.product-grid{grid-template-columns:1fr;}}
+
+.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:3px solid var(--border);}
+.product-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
+.product-card.pc-danger{border-top-color:var(--red);}
+.product-card.pc-warn{border-top-color:var(--orange);}
+.product-card.pc-caution{border-top-color:var(--yellow);}
+.product-card.pc-ok{border-top-color:var(--green);}
+
+.pc-name{font-size:14px;font-weight:700;line-height:1.4;margin-bottom:2px;color:var(--text);}
+.pc-code{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;}
+.pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
+.pc-stat-lbl{font-size:10px;color:var(--text3);margin-bottom:2px;}
+.pc-stat-val{font-family:var(--mono);font-size:17px;font-weight:500;}
+.pc-stat-unit{font-size:10px;color:var(--text3);font-weight:400;}
+
+.abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px;}
+.abc-cell{text-align:center;padding:5px 3px;border-radius:6px;border:1px solid var(--border);}
+.abc-lbl{font-size:10px;font-weight:700;color:var(--text3);}
+.abc-date{font-size:12px;font-family:var(--mono);font-weight:600;margin-top:1px;}
+.abc-mo{font-size:9px;color:var(--text3);margin-top:1px;}
+
+/* ABC cell colors */
+.c-red{color:var(--red);background:var(--red-bg);border-color:#fca5a5;}
+.c-orange{color:var(--orange);background:var(--orange-bg);border-color:#fdba74;}
+.c-yellow{color:var(--yellow);background:var(--yellow-bg);border-color:#fcd34d;}
+.c-green{color:var(--green);background:var(--green-bg);border-color:#86efac;}
+.c-gray{color:var(--text3);background:var(--bg);border-color:var(--border);}
+
+.warn-badge{display:inline-block;background:var(--red-bg);color:var(--red);border:1px solid #fca5a5;border-radius:4px;font-size:10px;font-weight:700;padding:2px 8px;margin-top:8px;}
+.caution-badge{display:inline-block;background:var(--yellow-bg);color:var(--yellow);border:1px solid #fcd34d;border-radius:4px;font-size:10px;font-weight:700;padding:2px 8px;margin-top:8px;}
+
+/* ══════════════════════════════════════
+   DETAIL PAGE (P2-P10)
+══════════════════════════════════════ */
+.detail-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--blue);cursor:pointer;margin-bottom:14px;font-weight:600;}
+.detail-back:hover{text-decoration:underline;}
+
+.detail-hd{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;box-shadow:var(--shadow);}
+.detail-name{font-size:18px;font-weight:700;}
+.detail-code{font-size:12px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
+.detail-kpis{display:flex;gap:28px;}
+.dkpi-lbl{font-size:11px;color:var(--text3);}
+.dkpi-val{font-family:var(--mono);font-size:22px;font-weight:500;}
+.dkpi-unit{font-size:11px;color:var(--text3);}
+
+.charts-grid{display:grid;grid-template-columns:3fr 2fr;gap:14px;margin-bottom:14px;}
+@media(max-width:800px){.charts-grid{grid-template-columns:1fr;}}
+
+.chart-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.chart-ttl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;}
+.chart-wrap{position:relative;height:220px;}
+.chart-legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap;}
+.leg-item{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text3);}
+.leg-bar{width:12px;height:5px;border-radius:2px;}
+.leg-line{width:14px;height:2px;}
+
+.info-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:900px){.info-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:500px){.info-grid{grid-template-columns:1fr;}}
+
+.info-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:14px 16px;box-shadow:var(--shadow);}
+.info-card-ttl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.info-row{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;margin-bottom:5px;}
+.info-lbl{color:var(--text3);}
+.info-val{font-weight:600;font-family:var(--mono);}
+.info-div{height:1px;background:var(--border);margin:6px 0;}
+
+/* ══════════════════════════════════════
+   TABLES (P11, P12, P13)
+══════════════════════════════════════ */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.search-input{border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-size:13px;font-family:var(--sans);outline:none;background:var(--white);width:240px;}
+.search-input:focus{border-color:var(--blue);}
+
+.table-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.table-scroll{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead th{background:#f8fafc;padding:9px 12px;text-align:left;font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border);white-space:nowrap;}
+thead th.r{text-align:right;}
+thead th.c{text-align:center;}
+tbody td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:middle;}
+tbody tr:last-child td{border-bottom:none;}
+tbody tr:hover{background:#fafbff;}
+.td-mono{font-family:var(--mono);font-size:13px;}
+.td-r{text-align:right;}
+.td-c{text-align:center;}
+.td-code{font-family:var(--mono);font-size:11px;color:var(--text3);}
+.td-ev{font-size:11px;color:var(--text2);background:#f1f5f9;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+
+/* Date color classes for tables */
+.d-red{color:var(--red);font-weight:700;}
+.d-orange{color:var(--orange);font-weight:600;}
+.d-yellow{color:var(--yellow);}
+.d-green{color:var(--green);}
+.d-gray{color:var(--text3);}
+
+/* Pagination */
+.pagination{display:flex;align-items:center;justify-content:center;gap:5px;padding:12px;border-top:1px solid var(--border);}
+.page-btn{padding:4px 10px;border:1px solid var(--border);border-radius:6px;background:var(--white);font-size:12px;cursor:pointer;font-family:var(--sans);color:var(--text2);}
+.page-btn:hover{background:#f8fafc;}
+.page-btn.active{background:var(--blue);border-color:var(--blue);color:white;font-weight:700;}
+.page-btn:disabled{opacity:.4;cursor:not-allowed;}
+.pag-info{font-size:11px;color:var(--text3);font-family:var(--mono);margin-left:4px;}
+
+/* ══════════════════════════════════════
+   P13 FILTER PILLS
+══════════════════════════════════════ */
+.filter-sec{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;box-shadow:var(--shadow);}
+.filter-sec-inner{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:600px){.filter-sec-inner{grid-template-columns:1fr;}}
+.f-lbl{font-size:11px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:7px;}
+.pill-group{display:flex;gap:6px;flex-wrap:wrap;}
+.pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border);color:var(--text3);background:var(--white);transition:all .15s;font-family:var(--sans);}
+.pill.active{background:var(--blue);border-color:var(--blue);color:white;}
+
+/* ══════════════════════════════════════
+   MISC
+══════════════════════════════════════ */
+.empty-row td{text-align:center;color:var(--text3);padding:24px!important;}
+.section-div{height:1px;background:var(--border);margin:12px 0;}
+</style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<div class="header">
+  <div class="header-left">
+    <span class="logo">Benesse TW</span>
+    <span class="header-title">庫存儀表板</span>
+  </div>
+  <div class="header-right">
+    <span class="upload-status" id="upStatus"></span>
+    <span class="data-date" id="dataDate">尚未上傳資料</span>
+    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 上傳 Excel</button>
+    <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
+  </div>
+</div>
+
+<!-- ── Navigation ── -->
+<div class="nav-bar">
+  <button class="nav-btn active" id="nav-p1" onclick="showPage('p1')">📊 P1 學習商品主頁</button>
+  <button class="nav-btn" id="nav-detail" onclick="showPage('detail')" style="display:none">📋 商品詳細</button>
+  <button class="nav-btn" id="nav-p11" onclick="showPage('p11')">📦 P11 其他商品</button>
+  <button class="nav-btn" id="nav-p12" onclick="showPage('p12')">⚠️ P12 有庫無銷</button>
+  <button class="nav-btn" id="nav-p13" onclick="showPage('p13')">🔍 P13 滯銷篩選</button>
+</div>
+
+<!-- ══════════════════════════════════════
+     P1: LEARNING PRODUCTS OVERVIEW
+══════════════════════════════════════ -->
+<div id="page-p1" class="page active">
+  <div id="p1NoData" class="no-data">
+    <h3>請上傳 Excel 報表</h3>
+    <p>上傳「●庫存查詢.xlsx」即可顯示庫存儀表板</p>
+    <div class="upload-hint" onclick="document.getElementById('fileInput').click()">📁 點此上傳 Excel</div>
+  </div>
+  <div id="p1Content" style="display:none">
+    <div class="page-hd">
+      <span class="page-title">學習商品 庫存健康度一覽</span>
+      <span class="result-count" id="p1Count"></span>
+    </div>
+    <div class="product-grid" id="productGrid"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DETAIL PAGE (P2–P10)
+══════════════════════════════════════ -->
+<div id="page-detail" class="page">
+  <div class="detail-back" onclick="backToP1()">← 回到學習商品主頁</div>
+  <div class="detail-hd">
+    <div>
+      <div class="detail-name" id="dName">—</div>
+      <div class="detail-code" id="dCode">—</div>
+    </div>
+    <div class="detail-kpis">
+      <div><div class="dkpi-lbl">目前庫存</div><div><span class="dkpi-val" id="dStock">—</span><span class="dkpi-unit"> 件</span></div></div>
+      <div><div class="dkpi-lbl">近3月均</div><div><span class="dkpi-val" id="dAvg">—</span><span class="dkpi-unit"> 件/月</span></div></div>
+      <div><div class="dkpi-lbl">前一年累計</div><div><span class="dkpi-val" id="dYear">—</span><span class="dkpi-unit"> 件</span></div></div>
+    </div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-card">
+      <div class="chart-ttl">📈 月銷售趨勢＋A/B/C 未來12個月預測</div>
+      <div class="chart-wrap"><canvas id="salesChart"></canvas></div>
+      <div class="chart-legend">
+        <span class="leg-item"><span class="leg-bar" style="background:#3b82f6"></span>近3月實際</span>
+        <span class="leg-item"><span class="leg-bar" style="background:#bfdbfe"></span>歷史銷售</span>
+        <span class="leg-item"><span class="leg-line" style="background:var(--blue-dark)"></span>A ×100%</span>
+        <span class="leg-item"><span class="leg-line" style="background:var(--pink)"></span>B ×120%</span>
+        <span class="leg-item"><span class="leg-line" style="background:var(--teal)"></span>C ×135%</span>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-ttl">📦 庫存預測趨勢（A/B/C）</div>
+      <div class="chart-wrap"><canvas id="invChart"></canvas></div>
+    </div>
+  </div>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="info-card-ttl">庫存狀況</div>
+      <div class="info-row"><span class="info-lbl">目前庫存</span><span class="info-val" id="di-stock">—</span></div>
+      <div class="info-row"><span class="info-lbl">近3月均</span><span class="info-val" id="di-avg3">—</span></div>
+      <div class="info-row"><span class="info-lbl">近6月均</span><span class="info-val" id="di-avg6">—</span></div>
+      <div class="info-row"><span class="info-lbl">前一年累計</span><span class="info-val" id="di-year">—</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl" style="color:var(--blue-dark)">A 預測（×100%）</div>
+      <div class="info-row"><span class="info-lbl">月均</span><span class="info-val" id="dia-avg">—</span></div>
+      <div class="info-div"></div>
+      <div class="info-row"><span class="info-lbl">可售月數</span><span class="info-val" id="dia-mo">—</span></div>
+      <div class="info-row"><span class="info-lbl">完售預估</span><span class="info-val" id="dia-date">—</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl" style="color:var(--pink)">B 預測（×120%）</div>
+      <div class="info-row"><span class="info-lbl">月均</span><span class="info-val" id="dib-avg">—</span></div>
+      <div class="info-div"></div>
+      <div class="info-row"><span class="info-lbl">可售月數</span><span class="info-val" id="dib-mo">—</span></div>
+      <div class="info-row"><span class="info-lbl">完售預估</span><span class="info-val" id="dib-date">—</span></div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl" style="color:var(--teal)">C 預測（×135%）</div>
+      <div class="info-row"><span class="info-lbl">月均</span><span class="info-val" id="dic-avg">—</span></div>
+      <div class="info-div"></div>
+      <div class="info-row"><span class="info-lbl">可售月數</span><span class="info-val" id="dic-mo">—</span></div>
+      <div class="info-row"><span class="info-lbl">完售預估</span><span class="info-val" id="dic-date">—</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     P11: OTHER PRODUCTS
+══════════════════════════════════════ -->
+<div id="page-p11" class="page">
+  <div id="p11NoData" class="no-data">
+    <h3>請上傳 Excel 報表</h3>
+    <p>上傳後可查看學習商品以外的商品庫存與預測</p>
+  </div>
+  <div id="p11Content" style="display:none">
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="p11Search" placeholder="搜尋商品名稱或編號..." oninput="renderP11()">
+      <span class="result-count" id="p11Count">0 筆</span>
+    </div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>商品編號</th><th>商品名稱</th><th>事業別</th>
+            <th class="r">庫存(件)</th><th class="r">庫存金額</th><th class="r">近3月均</th>
+            <th class="c">A 完售</th><th class="c">B 完售</th><th class="c">C 完售</th>
+          </tr></thead>
+          <tbody id="p11Body"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="p11Pag"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     P12: DEAD STOCK
+══════════════════════════════════════ -->
+<div id="page-p12" class="page">
+  <div id="p12NoData" class="no-data">
+    <h3>請上傳 Excel 報表</h3>
+    <p>上傳後可查看近6個月零銷售、但仍有庫存的商品</p>
+  </div>
+  <div id="p12Content" style="display:none">
+    <div class="page-hd">
+      <span class="page-title">有庫無銷 — 近6個月零銷售商品</span>
+      <span class="result-count" id="p12Count">0 筆</span>
+    </div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>商品編號</th><th>商品名稱</th><th>事業別</th>
+            <th class="r">庫存(件)</th><th class="r">庫存金額</th><th class="c">最後銷售月</th>
+          </tr></thead>
+          <tbody id="p12Body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     P13: SLOW-MOVING FILTER
+══════════════════════════════════════ -->
+<div id="page-p13" class="page">
+  <div id="p13NoData" class="no-data">
+    <h3>請上傳 Excel 報表</h3>
+    <p>上傳後可使用滯銷商品篩選器</p>
+  </div>
+  <div id="p13Content" style="display:none">
+    <div class="filter-sec">
+      <div class="filter-sec-inner">
+        <div>
+          <div class="f-lbl">A. 庫存金額（最低）</div>
+          <div class="pill-group" id="valPills">
+            <button class="pill active" data-val="0" onclick="setPill(this,'val')">全部</button>
+            <button class="pill" data-val="100000" onclick="setPill(this,'val')">10萬以上</button>
+            <button class="pill" data-val="250000" onclick="setPill(this,'val')">25萬以上</button>
+            <button class="pill" data-val="500000" onclick="setPill(this,'val')">50萬以上</button>
+            <button class="pill" data-val="1000000" onclick="setPill(this,'val')">100萬以上</button>
+          </div>
+        </div>
+        <div>
+          <div class="f-lbl">B. A方案完售月數（最少）</div>
+          <div class="pill-group" id="moPills">
+            <button class="pill active" data-val="0" onclick="setPill(this,'mo')">全部</button>
+            <button class="pill" data-val="6" onclick="setPill(this,'mo')">6個月以上</button>
+            <button class="pill" data-val="9" onclick="setPill(this,'mo')">9個月以上</button>
+            <button class="pill" data-val="12" onclick="setPill(this,'mo')">12個月以上</button>
+            <button class="pill" data-val="24" onclick="setPill(this,'mo')">24個月以上</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" class="search-input" id="p13Search" placeholder="搜尋商品..." oninput="renderP13()">
+      <span class="result-count" id="p13Count">0 筆</span>
+    </div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead><tr>
+            <th>商品編號</th><th>商品名稱</th><th>事業別</th>
+            <th class="r">庫存金額</th><th class="r">近3月均</th>
+            <th class="c">A 月數</th><th class="c">A 完售</th><th class="c">B 完售</th><th class="c">C 完售</th>
+          </tr></thead>
+          <tbody id="p13Body"></tbody>
+        </table>
+      </div>
+      <div class="pagination" id="p13Pag"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════
+// GLOBALS
+// ════════════════════════════════════════════
+var MONTHS=[], LATEST_MONTH='';
+var INV={};    // code -> {qty, val}
+var SALES={};  // code -> {ev, name, m:{month->qty}}
+var LEARN={};  // code -> {lead, first, price, prodCount, inDate}
+var LEARN_CODES=[];
+var ALL_ITEMS=[]; // [{ev,ev2,code,name,qty,val,s3,health}]
+
+var salesChartInst=null, invChartInst=null;
+var P11_LIST=[], P11_PAGE=1;
+var P13_LIST=[], P13_PAGE=1;
+var P13_VAL=0, P13_MO=0;
+var PAGE_SIZE=30;
+
+// ════════════════════════════════════════════
+// UTILS
+// ════════════════════════════════════════════
+function fmt(n){if(n==null||isNaN(Number(n)))return'—';return Number(n).toLocaleString('zh-TW');}
+function fmtM(m){if(!m||m.length<6)return m||'—';return m.slice(0,4)+'/'+m.slice(4,6);}
+function fmtDate(d){if(!d)return'—';return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0');}
+
+function addMonths(yyyymm,n){
+  var y=parseInt(yyyymm.slice(0,4)),mo=parseInt(yyyymm.slice(4,6))-1;
+  var d=new Date(y,mo+n,1);
+  return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0');
+}
+
+function getSellDate(stock,rate,base){
+  if(rate<=0||stock<=0)return null;
+  var mo=stock/rate;
+  var y=parseInt(base.slice(0,4)),m=parseInt(base.slice(4,6))-1;
+  var d=new Date(y,m+Math.ceil(mo),1);
+  return d;
+}
+
+function getMoLeft(stock,rate){
+  if(rate<=0)return Infinity;
+  if(stock<=0)return 0;
+  return stock/rate;
+}
+
+function dateColorCls(d){
+  if(!d)return'c-green';
+  var now=new Date();
+  var mo=(d.getFullYear()-now.getFullYear())*12+(d.getMonth()-now.getMonth());
+  if(mo<=3)return'c-red';
+  if(mo<=6)return'c-orange';
+  if(mo<=12)return'c-yellow';
+  return'c-green';
+}
+
+function dateTdCls(d){
+  if(!d)return'd-green';
+  var now=new Date();
+  var mo=(d.getFullYear()-now.getFullYear())*12+(d.getMonth()-now.getMonth());
+  if(mo<=3)return'd-red';
+  if(mo<=6)return'd-orange';
+  if(mo<=12)return'd-yellow';
+  return'd-green';
+}
+
+function moTdCls(mo){
+  if(!isFinite(mo)||mo===0)return'd-red';
+  if(mo<=3)return'd-red';
+  if(mo<=6)return'd-orange';
+  if(mo<=12)return'd-yellow';
+  return'd-green';
+}
+
+function findSh(wb,kws){
+  for(var i=0;i<kws.length;i++){
+    var f=wb.SheetNames.filter(function(n){return n.indexOf(kws[i])>=0;})[0];
+    if(f)return f;
+  }
+  return null;
+}
+
+function setStatus(type,msg){
+  var el=document.getElementById('upStatus');
+  el.className='upload-status '+type;
+  el.textContent=msg;
+}
+
+// ════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════
+function showPage(id){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active');});
+  var pg=document.getElementById('page-'+id);
+  var nb=document.getElementById('nav-'+id);
+  if(pg)pg.classList.add('active');
+  if(nb)nb.classList.add('active');
+}
+
+function backToP1(){
+  document.getElementById('nav-detail').style.display='none';
+  showPage('p1');
+}
+
+// ════════════════════════════════════════════
+// UPLOAD & PARSE
+// ════════════════════════════════════════════
+function handleFile(file){
+  if(!file)return;
+  setStatus('loading','讀取中...');
+  var r=new FileReader();
+  r.onload=function(e){
+    try{var wb=XLSX.read(e.target.result,{type:'array'});parseXL(wb,file.name);}
+    catch(err){setStatus('err','讀取失敗：'+err.message);}
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function parseXL(wb,fname){
+  try{
+    var sInv=findSh(wb,['在庫']);
+    var sPn=findSh(wb,['品名健康度']);
+    var sSales=findSh(wb,['銷貨數 (總數)','銷貨數(總數)','銷貨數']);
+    var sLearn=findSh(wb,['學習商品(claude)','學習商品(Claude)']);
+
+    if(!sInv||!sPn||!sSales){
+      setStatus('err','找不到必要工作表（在庫/品名健康度/銷貨數）');
+      return;
+    }
+
+    // ── 在庫 ──
+    var wInv=XLSX.utils.sheet_to_json(wb.Sheets[sInv],{header:1,defval:null});
+    var ds=wInv[2]?String(wInv[2][0]||''):'';
+    var rc=ds.match(/(\d+)\/(\d+)\/(\d+)/);
+    var dataDate=fname;
+    if(rc){var y=parseInt(rc[1]);dataDate=(y<200?y+1911:y)+'/'+rc[2]+'/'+rc[3];}
+    document.getElementById('dataDate').textContent='在庫日期：'+dataDate;
+
+    INV={};
+    for(var i=4;i<wInv.length;i++){
+      var r=wInv[i];if(!r||!r[0])continue;
+      var c=String(r[0]).trim();
+      if(!INV[c])INV[c]={qty:0,val:0};
+      INV[c].qty+=parseFloat(r[3])||0;
+      INV[c].val+=parseFloat(r[4])||0;
+    }
+
+    // ── 銷貨數(總數) ──
+    var wS=XLSX.utils.sheet_to_json(wb.Sheets[sSales],{header:1,defval:null});
+    var hRow=wS[2]||[];
+    MONTHS=[];var mIdx={};
+    hRow.forEach(function(v,i){
+      if(v&&String(v).match(/^20\d{4}$/)){MONTHS.push(String(v));mIdx[String(v)]=i;}
+    });
+    LATEST_MONTH=MONTHS[MONTHS.length-1]||'';
+
+    SALES={};
+    for(var i=3;i<wS.length;i++){
+      var r=wS[i];if(!r||!r[1])continue;
+      var c=String(r[1]).trim();
+      if(!SALES[c])SALES[c]={ev:String(r[0]||''),name:String(r[2]||''),m:{}};
+      MONTHS.forEach(function(m){SALES[c].m[m]=(SALES[c].m[m]||0)+(parseFloat(r[mIdx[m]])||0);});
+    }
+
+    // ── 學習商品(claude) ──
+    LEARN={};LEARN_CODES=[];
+    if(sLearn){
+      var wL=XLSX.utils.sheet_to_json(wb.Sheets[sLearn]);
+      wL.forEach(function(r){
+        var id=String(r['商品編號']||'').trim();
+        if(!id)return;
+        LEARN[id]={
+          lead:parseInt(r['追加製作期_月'])||6,
+          first:String(r['首月銷售月份']||'').trim(),
+          price:parseFloat(r['單價'])||0,
+          prodCount:parseInt(r['製作数']||r['製作數']||0)||0,
+          inDate:String(r['入庫日']||r['入庫月']||'').trim()
+        };
+        LEARN_CODES.push(id);
+      });
+    }
+
+    // ── 品名健康度 ──
+    var wPn=XLSX.utils.sheet_to_json(wb.Sheets[sPn],{header:1,defval:null});
+    ALL_ITEMS=[];
+    for(var i=4;i<wPn.length;i++){
+      var r=wPn[i];if(!r||!r[2]||!r[11])continue;
+      var code=String(r[2]).trim();
+      ALL_ITEMS.push({
+        ev:String(r[0]||''),ev2:String(r[1]||''),
+        code:code,name:String(r[3]||''),
+        qty:parseInt(r[4])||0,val:parseInt(r[5])||0,
+        s3:parseFloat(r[8])||0,avg:parseFloat(r[9])||0,
+        health:String(r[11])
+      });
+    }
+
+    // Show content
+    ['p1','p11','p12','p13'].forEach(function(id){
+      var nd=document.getElementById(id+'NoData');
+      var ct=document.getElementById(id+'Content');
+      if(nd)nd.style.display='none';
+      if(ct)ct.style.display='';
+    });
+
+    renderP1();
+    renderP11();
+    renderP12();
+    renderP13();
+
+    setStatus('ok','載入成功 '+ALL_ITEMS.length+' 筆｜'+dataDate+'｜'+MONTHS.length+'個月資料');
+  }catch(err){setStatus('err','解析失敗：'+err.message);console.error(err);}
+}
+
+// ════════════════════════════════════════════
+// CALCULATIONS
+// ════════════════════════════════════════════
+function getAvgN(code,n){
+  var ms=MONTHS.slice(-n);
+  if(!ms.length)return 0;
+  var tot=ms.reduce(function(s,m){return s+((SALES[code]&&SALES[code].m[m])||0);},0);
+  return tot/n;
+}
+
+function getYearTotal(code){
+  return MONTHS.slice(-12).reduce(function(s,m){return s+((SALES[code]&&SALES[code].m[m])||0);},0);
+}
+
+function getABC(code){
+  var stock=INV[code]?Math.round(INV[code].qty):0;
+  var val=INV[code]?Math.round(INV[code].val):0;
+  var avg3=getAvgN(code,3);
+  var a=avg3, b=avg3*1.2, c=avg3*1.35;
+  return{
+    stock:stock,val:val,avg3:avg3,
+    a:a,b:b,c:c,
+    moA:getMoLeft(stock,a),moB:getMoLeft(stock,b),moC:getMoLeft(stock,c),
+    dateA:getSellDate(stock,a,LATEST_MONTH),
+    dateB:getSellDate(stock,b,LATEST_MONTH),
+    dateC:getSellDate(stock,c,LATEST_MONTH)
+  };
+}
+
+// ════════════════════════════════════════════
+// P1: LEARNING PRODUCTS
+// ════════════════════════════════════════════
+function renderP1(){
+  var codes=LEARN_CODES.length>0?LEARN_CODES:
+    ALL_ITEMS.filter(function(it){return it.ev==='學習商品';}).map(function(it){return it.code;});
+
+  document.getElementById('p1Count').textContent=codes.length+' 個學習商品';
+
+  document.getElementById('productGrid').innerHTML=codes.map(function(code){
+    var abc=getABC(code);
+    var info=ALL_ITEMS.find(function(it){return it.code===code;})||{};
+    var name=info.name||(SALES[code]&&SALES[code].name)||code;
+
+    var cA=abc.dateA?dateColorCls(abc.dateA):'c-gray';
+    var cB=abc.dateB?dateColorCls(abc.dateB):'c-gray';
+    var cC=abc.dateC?dateColorCls(abc.dateC):'c-gray';
+
+    var cardCls='product-card';
+    if(!isFinite(abc.moA)||abc.moA===0)cardCls+=' pc-danger';
+    else if(abc.moA<=6)cardCls+=' pc-danger';
+    else if(abc.moA<=12)cardCls+=' pc-warn';
+    else if(abc.moA<=18)cardCls+=' pc-caution';
+    else cardCls+=' pc-ok';
+
+    var badge='';
+    if(abc.stock>0&&abc.avg3>0){
+      if(abc.moA<=6)badge='<div class="warn-badge">⚠ 半年內完售風險</div>';
+      else if(abc.moA<=12)badge='<div class="caution-badge">△ 一年內完售風險</div>';
+    }
+
+    var moAStr=isFinite(abc.moA)&&abc.moA>0?abc.moA.toFixed(1)+'M':'—';
+    var moBStr=isFinite(abc.moB)&&abc.moB>0?abc.moB.toFixed(1)+'M':'—';
+    var moCStr=isFinite(abc.moC)&&abc.moC>0?abc.moC.toFixed(1)+'M':'—';
+
+    return '<div class="'+cardCls+'" onclick="showDetail(\''+code+'\',\''+escQ(name)+'\')">'
+      +'<div class="pc-name">'+name+'</div>'
+      +'<div class="pc-code">'+code+'</div>'
+      +'<div class="pc-stats">'
+      +'<div><div class="pc-stat-lbl">目前庫存</div><div class="pc-stat-val">'+fmt(abc.stock)+'<span class="pc-stat-unit"> 件</span></div></div>'
+      +'<div><div class="pc-stat-lbl">近3月均</div><div class="pc-stat-val">'+abc.avg3.toFixed(1)+'<span class="pc-stat-unit"> 件/月</span></div></div>'
+      +'</div>'
+      +'<div class="abc-row">'
+      +'<div class="abc-cell '+cA+'"><div class="abc-lbl">A</div><div class="abc-date">'+(abc.dateA?fmtDate(abc.dateA):'∞')+'</div><div class="abc-mo">'+moAStr+'</div></div>'
+      +'<div class="abc-cell '+cB+'"><div class="abc-lbl">B</div><div class="abc-date">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</div><div class="abc-mo">'+moBStr+'</div></div>'
+      +'<div class="abc-cell '+cC+'"><div class="abc-lbl">C</div><div class="abc-date">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</div><div class="abc-mo">'+moCStr+'</div></div>'
+      +'</div>'
+      +badge
+      +'</div>';
+  }).join('');
+}
+
+function escQ(s){return String(s).replace(/'/g,"\\'");}
+
+// ════════════════════════════════════════════
+// DETAIL (P2-P10)
+// ════════════════════════════════════════════
+function showDetail(code,name){
+  var abc=getABC(code);
+  var yearTotal=getYearTotal(code);
+  var avg6=getAvgN(code,6);
+
+  document.getElementById('dName').textContent=name||code;
+  document.getElementById('dCode').textContent=code;
+  document.getElementById('dStock').textContent=fmt(abc.stock);
+  document.getElementById('dAvg').textContent=abc.avg3.toFixed(1);
+  document.getElementById('dYear').textContent=fmt(yearTotal);
+
+  document.getElementById('di-stock').textContent=fmt(abc.stock)+' 件';
+  document.getElementById('di-avg3').textContent=abc.avg3.toFixed(1)+' 件/月';
+  document.getElementById('di-avg6').textContent=avg6.toFixed(1)+' 件/月';
+  document.getElementById('di-year').textContent=fmt(yearTotal)+' 件';
+
+  function setABCInfo(pre,avg,mo,date){
+    document.getElementById('di'+pre+'-avg').textContent=avg.toFixed(1)+' 件/月';
+    document.getElementById('di'+pre+'-mo').textContent=isFinite(mo)&&mo>0?mo.toFixed(1)+' 個月':'∞';
+    var el=document.getElementById('di'+pre+'-date');
+    el.textContent=date?fmtDate(date):(avg<=0?'—':'∞');
+    el.className='info-val '+(date?dateTdCls(date).replace('d-','date-'):'d-gray').replace('d-','');
+    // simpler: just color directly
+    var cls=date?dateTdCls(date):'d-gray';
+    el.style.color=cls==='d-red'?'var(--red)':cls==='d-orange'?'var(--orange)':cls==='d-yellow'?'var(--yellow)':cls==='d-green'?'var(--green)':'var(--text3)';
+  }
+  setABCInfo('a',abc.a,abc.moA,abc.dateA);
+  setABCInfo('b',abc.b,abc.moB,abc.dateB);
+  setABCInfo('c',abc.c,abc.moC,abc.dateC);
+
+  var navBtn=document.getElementById('nav-detail');
+  navBtn.style.display='';
+  navBtn.textContent='📋 '+(name&&name.length>10?name.slice(0,10)+'…':name||code);
+  showPage('detail');
+
+  setTimeout(function(){drawSalesChart(code,abc);drawInvChart(code,abc);},60);
+}
+
+function drawSalesChart(code,abc){
+  var ctx=document.getElementById('salesChart');
+  if(!ctx)return;
+  if(salesChartInst){salesChartInst.destroy();salesChartInst=null;}
+
+  var past=MONTHS.slice(-12);
+  var future=[];
+  for(var i=1;i<=12;i++)future.push(addMonths(LATEST_MONTH,i));
+
+  var allLabels=past.map(fmtM).concat(['│']).concat(future.map(fmtM));
+  var pastVals=past.map(function(m){return Math.round((SALES[code]&&SALES[code].m[m])||0);});
+  var nullN=past.map(function(){return null;});
+  var nullF=future.map(function(){return null;});
+  var barData=pastVals.concat([null]).concat(nullF);
+  var bgColors=past.map(function(m,i){return i>=past.length-3?'#3b82f6':'#bfdbfe';}).concat([null]).concat(nullF);
+  var lineA=nullN.concat([null]).concat(future.map(function(){return Math.round(abc.a);}));
+  var lineB=nullN.concat([null]).concat(future.map(function(){return Math.round(abc.b);}));
+  var lineC=nullN.concat([null]).concat(future.map(function(){return Math.round(abc.c);}));
+
+  salesChartInst=new Chart(ctx,{
+    type:'bar',
+    data:{labels:allLabels,datasets:[
+      {type:'bar',label:'實際銷售',data:barData,backgroundColor:bgColors,borderRadius:3,order:2},
+      {type:'line',label:'A ×100%',data:lineA,borderColor:'#1d4ed8',backgroundColor:'transparent',borderWidth:2,pointRadius:2,tension:0,spanGaps:false,order:1},
+      {type:'line',label:'B ×120%',data:lineB,borderColor:'#be185d',backgroundColor:'transparent',borderWidth:2,borderDash:[5,3],pointRadius:2,tension:0,spanGaps:false,order:1},
+      {type:'line',label:'C ×135%',data:lineC,borderColor:'#065f46',backgroundColor:'transparent',borderWidth:2,borderDash:[2,3],pointRadius:2,tension:0,spanGaps:false,order:1}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y!=null?c.dataset.label+': '+c.parsed.y+' 件':null;}}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
+        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4'}}
+      }
+    }
+  });
+}
+
+function drawInvChart(code,abc){
+  var ctx=document.getElementById('invChart');
+  if(!ctx)return;
+  if(invChartInst){invChartInst.destroy();invChartInst=null;}
+
+  var stock=abc.stock;
+  var maxMo=Math.max(24,Math.ceil(isFinite(abc.moA)?abc.moA+2:12));
+  maxMo=Math.min(maxMo,36);
+
+  var labels=[fmtM(LATEST_MONTH)],dA=[stock],dB=[stock],dC=[stock];
+  for(var i=1;i<=maxMo;i++){
+    labels.push(fmtM(addMonths(LATEST_MONTH,i)));
+    dA.push(Math.max(0,stock-Math.round(abc.a*i)));
+    dB.push(Math.max(0,stock-Math.round(abc.b*i)));
+    dC.push(Math.max(0,stock-Math.round(abc.c*i)));
+    if(dA[dA.length-1]===0&&dB[dB.length-1]===0&&dC[dC.length-1]===0)break;
+  }
+
+  invChartInst=new Chart(ctx,{
+    type:'line',
+    data:{labels:labels,datasets:[
+      {label:'A ×100%',data:dA,borderColor:'#1d4ed8',backgroundColor:'rgba(29,78,216,.06)',fill:true,borderWidth:2,pointRadius:1,tension:.3},
+      {label:'B ×120%',data:dB,borderColor:'#be185d',backgroundColor:'transparent',fill:false,borderWidth:2,borderDash:[5,3],pointRadius:1,tension:.3},
+      {label:'C ×135%',data:dC,borderColor:'#065f46',backgroundColor:'transparent',fill:false,borderWidth:2,borderDash:[2,3],pointRadius:1,tension:.3}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:14,padding:8}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
+        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4',callback:function(v){return fmt(v);}}}
+      }
+    }
+  });
+}
+
+// ════════════════════════════════════════════
+// P11: OTHER PRODUCTS
+// ════════════════════════════════════════════
+function renderP11(){
+  var q=(document.getElementById('p11Search').value||'').trim().toLowerCase();
+  var learnSet=new Set(LEARN_CODES);
+
+  P11_LIST=ALL_ITEMS.filter(function(it){
+    if(learnSet.size>0&&learnSet.has(it.code))return false;
+    if(q&&it.name.toLowerCase().indexOf(q)<0&&it.code.toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){return b.val-a.val;});
+
+  document.getElementById('p11Count').textContent=P11_LIST.length+' 筆';
+  P11_PAGE=1;
+  renderP11Page();
+}
+
+function renderP11Page(){
+  var rows=P11_LIST.slice((P11_PAGE-1)*PAGE_SIZE,P11_PAGE*PAGE_SIZE);
+  document.getElementById('p11Body').innerHTML=rows.map(function(it){
+    var abc=getABC(it.code);
+    var cA=abc.dateA?dateTdCls(abc.dateA):'d-gray';
+    var cB=abc.dateB?dateTdCls(abc.dateB):'d-gray';
+    var cC=abc.dateC?dateTdCls(abc.dateC):'d-gray';
+    return'<tr>'
+      +'<td class="td-code">'+it.code+'</td>'
+      +'<td>'+it.name+'</td>'
+      +'<td><span class="td-ev">'+(it.ev2||it.ev)+'</span></td>'
+      +'<td class="td-r td-mono">'+fmt(it.qty)+'</td>'
+      +'<td class="td-r td-mono">'+fmt(it.val)+'</td>'
+      +'<td class="td-r td-mono">'+abc.avg3.toFixed(1)+'</td>'
+      +'<td class="td-c td-mono '+cA+'">'+(abc.dateA?fmtDate(abc.dateA):'∞')+'</td>'
+      +'<td class="td-c td-mono '+cB+'">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</td>'
+      +'<td class="td-c td-mono '+cC+'">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</td>'
+      +'</tr>';
+  }).join('')||'<tr class="empty-row"><td colspan="9">無資料</td></tr>';
+  renderPag('p11Pag',P11_LIST.length,P11_PAGE,'p11GoPage');
+}
+
+function p11GoPage(p){P11_PAGE=p;renderP11Page();}
+
+// ════════════════════════════════════════════
+// P12: DEAD STOCK
+// ════════════════════════════════════════════
+function renderP12(){
+  var last6=MONTHS.slice(-6);
+  var dead=ALL_ITEMS.filter(function(it){
+    if(it.qty<=0&&it.val<=0)return false;
+    var s=last6.reduce(function(a,m){return a+((SALES[it.code]&&SALES[it.code].m[m])||0);},0);
+    return s===0;
+  }).sort(function(a,b){return b.val-a.val;});
+
+  document.getElementById('p12Count').textContent=dead.length+' 筆';
+  document.getElementById('p12Body').innerHTML=dead.map(function(it){
+    var lastM='';
+    for(var i=MONTHS.length-1;i>=0;i--){
+      if((SALES[it.code]&&SALES[it.code].m[MONTHS[i]])>0){lastM=fmtM(MONTHS[i]);break;}
+    }
+    return'<tr>'
+      +'<td class="td-code">'+it.code+'</td>'
+      +'<td>'+it.name+'</td>'
+      +'<td><span class="td-ev">'+(it.ev2||it.ev)+'</span></td>'
+      +'<td class="td-r td-mono">'+fmt(it.qty)+'</td>'
+      +'<td class="td-r td-mono">'+fmt(it.val)+'</td>'
+      +'<td class="td-c td-mono '+(lastM?'d-orange':'d-red')+'">'+( lastM||'無銷售紀錄')+'</td>'
+      +'</tr>';
+  }).join('')||'<tr class="empty-row"><td colspan="6">無有庫無銷商品 🎉</td></tr>';
+}
+
+// ════════════════════════════════════════════
+// P13: SLOW-MOVING FILTER
+// ════════════════════════════════════════════
+function setPill(el,group){
+  var container=document.getElementById(group==='val'?'valPills':'moPills');
+  container.querySelectorAll('.pill').forEach(function(p){p.classList.remove('active');});
+  el.classList.add('active');
+  if(group==='val')P13_VAL=parseInt(el.dataset.val)||0;
+  else P13_MO=parseInt(el.dataset.val)||0;
+  P13_PAGE=1;
+  renderP13();
+}
+
+function renderP13(){
+  var q=(document.getElementById('p13Search').value||'').trim().toLowerCase();
+
+  P13_LIST=ALL_ITEMS.filter(function(it){
+    if(it.val<P13_VAL)return false;
+    var abc=getABC(it.code);
+    var mo=abc.moA;
+    if(P13_MO>0){
+      if(!isFinite(mo))return true; // infinite months = include (有庫無銷)
+      if(mo<P13_MO)return false;
+    }
+    if(q&&it.name.toLowerCase().indexOf(q)<0&&it.code.toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){
+    var ma=getABC(a.code).moA,mb=getABC(b.code).moA;
+    var va=isFinite(ma)?ma:99999,vb=isFinite(mb)?mb:99999;
+    return vb-va;
+  });
+
+  document.getElementById('p13Count').textContent=P13_LIST.length+' 筆';
+  P13_PAGE=1;
+  renderP13Page();
+}
+
+function renderP13Page(){
+  var rows=P13_LIST.slice((P13_PAGE-1)*PAGE_SIZE,P13_PAGE*PAGE_SIZE);
+  document.getElementById('p13Body').innerHTML=rows.map(function(it){
+    var abc=getABC(it.code);
+    var mo=isFinite(abc.moA)&&abc.moA>0?abc.moA.toFixed(1):'∞';
+    var moCls=moTdCls(abc.moA);
+    var cA=abc.dateA?dateTdCls(abc.dateA):'d-gray';
+    var cB=abc.dateB?dateTdCls(abc.dateB):'d-gray';
+    var cC=abc.dateC?dateTdCls(abc.dateC):'d-gray';
+    return'<tr>'
+      +'<td class="td-code">'+it.code+'</td>'
+      +'<td>'+it.name+'</td>'
+      +'<td><span class="td-ev">'+(it.ev2||it.ev)+'</span></td>'
+      +'<td class="td-r td-mono">'+fmt(it.val)+'</td>'
+      +'<td class="td-r td-mono">'+abc.avg3.toFixed(1)+'</td>'
+      +'<td class="td-c td-mono '+moCls+'">'+mo+'</td>'
+      +'<td class="td-c td-mono '+cA+'">'+(abc.dateA?fmtDate(abc.dateA):'∞')+'</td>'
+      +'<td class="td-c td-mono '+cB+'">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</td>'
+      +'<td class="td-c td-mono '+cC+'">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</td>'
+      +'</tr>';
+  }).join('')||'<tr class="empty-row"><td colspan="9">無符合條件商品</td></tr>';
+  renderPag('p13Pag',P13_LIST.length,P13_PAGE,'p13GoPage');
+}
+
+function p13GoPage(p){P13_PAGE=p;renderP13Page();}
+
+// ════════════════════════════════════════════
+// PAGINATION HELPER
+// ════════════════════════════════════════════
+function renderPag(containerId,total,cur,fnName){
+  var tot=Math.ceil(total/PAGE_SIZE);
+  var el=document.getElementById(containerId);
+  if(tot<=1){el.innerHTML='';return;}
+  var h='<button class="page-btn" onclick="'+fnName+'('+(cur-1)+')" '+(cur===1?'disabled':'')+'>&lsaquo;</button>';
+  var s=Math.max(1,cur-2),e=Math.min(tot,cur+2);
+  if(s>1)h+='<button class="page-btn" onclick="'+fnName+'(1)">1</button>'+(s>2?'<span class="pag-info">…</span>':'');
+  for(var i=s;i<=e;i++)h+='<button class="page-btn'+(i===cur?' active':'')+'" onclick="'+fnName+'('+i+')">'+i+'</button>';
+  if(e<tot)h+=(e<tot-1?'<span class="pag-info">…</span>':'')+'<button class="page-btn" onclick="'+fnName+'('+tot+')">'+tot+'</button>';
+  h+='<button class="page-btn" onclick="'+fnName+'('+(cur+1)+')" '+(cur===tot?'disabled':'')+'>&rsaquo;</button>';
+  h+='<span class="pag-info">'+cur+'/'+tot+'頁</span>';
+  el.innerHTML=h;
+}
+</script>
+</body>
+</html>
