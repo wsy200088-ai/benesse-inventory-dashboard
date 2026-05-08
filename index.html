@@ -198,7 +198,8 @@ tbody tr:hover{background:#fafbff;}
   </div>
   <div class="header-right">
     <span class="upload-status" id="upStatus"></span>
-    <span class="data-date" id="dataDate">尚未上傳資料</span>
+    <span class="data-date" id="dataDate">載入中...</span>
+    <button class="upload-btn" id="dlJsonBtn" style="display:none;background:#16a34a" onclick="downloadDataJson()">💾 下載 data.json</button>
     <button class="upload-btn" onclick="document.getElementById('fileInput').click()">📁 上傳 Excel</button>
     <input type="file" id="fileInput" accept=".xlsx,.xls" style="display:none" onchange="handleFile(this.files[0])">
   </div>
@@ -406,6 +407,75 @@ tbody tr:hover{background:#fafbff;}
 </div>
 
 <script>
+// ════════════════════════════════════════════
+// AUTO-LOAD FROM data.json ON PAGE START
+// ════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', function(){
+  fetch('data.json?_=' + Date.now())
+    .then(function(res){
+      if(!res.ok) throw new Error('no data.json');
+      return res.json();
+    })
+    .then(function(data){
+      if(data && data.allItems && data.allItems.length){
+        loadFromJSON(data);
+      } else {
+        document.getElementById('dataDate').textContent='尚未上傳資料';
+      }
+    })
+    .catch(function(){
+      document.getElementById('dataDate').textContent='尚未上傳資料';
+    });
+});
+
+function loadFromJSON(data){
+  MONTHS       = data.months      || [];
+  LATEST_MONTH = data.latestMonth || '';
+  INV          = data.inv         || {};
+  SALES        = data.sales       || {};
+  LEARN        = data.learn       || {};
+  LEARN_CODES  = data.learnCodes  || [];
+  ALL_ITEMS    = data.allItems    || [];
+
+  document.getElementById('dataDate').textContent = data.dataDate || '已載入快取';
+
+  ['p1','p11','p12','p13'].forEach(function(id){
+    var nd=document.getElementById(id+'NoData');
+    var ct=document.getElementById(id+'Content');
+    if(nd) nd.style.display='none';
+    if(ct) ct.style.display='';
+  });
+
+  renderP1(); renderP11(); renderP12(); renderP13();
+  setStatus('ok','已從快取載入 '+ALL_ITEMS.length+' 筆｜'+data.dataDate);
+}
+
+// ════════════════════════════════════════════
+// EXPORT data.json (admin only)
+// ════════════════════════════════════════════
+function buildDataJSON(dataDate){
+  return JSON.stringify({
+    dataDate:    dataDate,
+    months:      MONTHS,
+    latestMonth: LATEST_MONTH,
+    inv:         INV,
+    sales:       SALES,
+    learn:       LEARN,
+    learnCodes:  LEARN_CODES,
+    allItems:    ALL_ITEMS
+  });
+}
+
+function downloadDataJson(){
+  var json = buildDataJSON(document.getElementById('dataDate').textContent.replace('在庫日期：',''));
+  var blob = new Blob([json], {type:'application/json'});
+  var a    = document.createElement('a');
+  a.href   = URL.createObjectURL(blob);
+  a.download = 'data.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
 // ════════════════════════════════════════════
 // GLOBALS
 // ════════════════════════════════════════════
@@ -615,6 +685,7 @@ function parseXL(wb,fname){
     renderP13();
 
     setStatus('ok','載入成功 '+ALL_ITEMS.length+' 筆｜'+dataDate+'｜'+MONTHS.length+'個月資料');
+    document.getElementById('dlJsonBtn').style.display='';
   }catch(err){setStatus('err','解析失敗：'+err.message);console.error(err);}
 }
 
