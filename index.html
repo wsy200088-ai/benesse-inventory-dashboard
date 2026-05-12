@@ -437,7 +437,7 @@ function loadFromJSON(data){
   LEARN_CODES  = data.learnCodes  || [];
   ALL_ITEMS    = data.allItems    || [];
 
-  document.getElementById('dataDate').textContent = data.dataDate || '已載入快取';
+  document.getElementById('dataDate').textContent = data.dataDate ? '在庫日期：'+data.dataDate : '已載入快取';
 
   ['p1','p11','p12','p13'].forEach(function(id){
     var nd=document.getElementById(id+'NoData');
