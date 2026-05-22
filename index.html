@@ -534,7 +534,7 @@ function loadFromJSON(data){
   PRICES       = data.prices      || {};
   EV_FROM_SALES= data.evFromSales || {};
   GIFT_CODES   = new Set(data.giftCodes || []);
-  PRODUCTION   = data.production   || {};
+  PRODUCTION   = data.production   || PRODUCTION;
 
   document.getElementById('dataDate').textContent = data.dataDate ? '在庫日期：'+data.dataDate : '已載入快取';
 
