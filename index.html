@@ -248,8 +248,8 @@ tbody tr:hover{background:#fafbff;}
 
 <!-- ── Navigation ── -->
 <div class="nav-bar">
-  <button class="nav-btn" id="nav-p1" onclick="showPage('p1')">📊 P1 學習商品主頁</button>
-  <button class="nav-btn active" id="nav-detail" onclick="showPage('detail')" style="">📋 和巧虎一起說英語套組…</button>
+  <button class="nav-btn active" id="nav-p1" onclick="showPage('p1')">📊 P1 學習商品主頁</button>
+  <button class="nav-btn" id="nav-detail" onclick="showPage('detail')" style="display:none">📋</button>
   <button class="nav-btn" id="nav-p11" onclick="showPage('p11')">📦 P11 其他商品</button>
   <button class="nav-btn" id="nav-p12" onclick="showPage('p12')">⚠️ P12 有庫無銷</button>
   <button class="nav-btn" id="nav-p13" onclick="showPage('p13')">🔍 P13 滯銷篩選</button>
@@ -258,7 +258,7 @@ tbody tr:hover{background:#fafbff;}
 <!-- ══════════════════════════════════════
      P1: LEARNING PRODUCTS OVERVIEW
 ══════════════════════════════════════ -->
-<div id="page-p1" class="page">
+<div id="page-p1" class="page active">
   <div id="p1NoData" class="no-data" style="display: none;">
     <h3>請上傳 Excel 報表</h3>
     <p>上傳「●庫存查詢.xlsx」即可顯示庫存儀表板</p>
@@ -278,7 +278,7 @@ tbody tr:hover{background:#fafbff;}
 <!-- ══════════════════════════════════════
      DETAIL PAGE (P2–P10)
 ══════════════════════════════════════ -->
-<div id="page-detail" class="page active">
+<div id="page-detail" class="page">
   <div class="detail-back" onclick="backToP1()">← 回到學習商品主頁</div>
   <div class="detail-hd">
     <div>
