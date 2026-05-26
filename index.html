@@ -65,7 +65,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 @media(max-width:900px){.product-grid{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){.product-grid{grid-template-columns:1fr;}}
 
-.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:3px solid var(--border);}
+.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:14px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:3px solid var(--border);}
 .product-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
 .product-card.pc-danger{border-top-color:var(--red);}
 .product-card.pc-warn{border-top-color:var(--orange);}
@@ -76,7 +76,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .pc-code{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:10px;}
 .pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
 .pc-stat-lbl{font-size:10px;color:var(--text3);margin-bottom:2px;}
-.pc-stat-val{font-family:var(--mono);font-size:17px;font-weight:500;}
+.pc-stat-val{font-family:var(--mono);font-size:16px;font-weight:500;}
 .pc-stat-unit{font-size:10px;color:var(--text3);font-weight:400;}
 
 .abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px;}
@@ -215,6 +215,21 @@ tbody tr:hover{background:#fafbff;}
 
 /* ABC sub-labels */
 .abc-sublbl{font-size:9px;color:var(--text3);margin-top:1px;font-weight:400;}
+
+/* P1 ABC list (replaces old abc-row/cell) */
+.abc-list{display:flex;flex-direction:column;gap:3px;margin:8px 0 10px;}
+.abc-item{display:flex;align-items:center;border-radius:7px;padding:6px 10px;border:1px solid transparent;}
+.abc-item-scen{font-size:11px;font-weight:700;width:52px;flex-shrink:0;letter-spacing:.01em;}
+.abc-item-pct{font-size:9px;font-weight:400;opacity:.8;}
+.abc-item-date{font-family:var(--mono);font-size:13px;font-weight:600;flex:1;text-align:center;}
+.abc-item-mo{font-family:var(--mono);font-weight:700;text-align:right;white-space:nowrap;line-height:1.1;}
+.abc-item-unit{font-size:10px;font-weight:400;margin-left:1px;}
+.abc-item-a .abc-item-mo{font-size:22px;}
+.abc-item-bc .abc-item-mo{font-size:16px;}
+
+/* Updated stats row */
+.pc-stats-row{display:flex;gap:16px;padding-top:8px;border-top:1px solid var(--border);}
+.pc-stats-row>div{flex:1;}
 
 /* ══════════════════════════════════════
    生產卡片
@@ -1095,22 +1110,34 @@ function renderP1(){
       else if(abc.moA<=12)badge='<div class="caution-badge">△ 一年內完售風險</div>';
     }
 
-    var moAStr=isFinite(abc.moA)&&abc.moA>0?abc.moA.toFixed(1)+'M':'—';
-    var moBStr=isFinite(abc.moB)&&abc.moB>0?abc.moB.toFixed(1)+'M':'—';
-    var moCStr=isFinite(abc.moC)&&abc.moC>0?abc.moC.toFixed(1)+'M':'—';
+    var moA_num=isFinite(abc.moA)&&abc.moA>0?abc.moA.toFixed(1):'∞';
+    var moB_num=isFinite(abc.moB)&&abc.moB>0?abc.moB.toFixed(1):'∞';
+    var moC_num=isFinite(abc.moC)&&abc.moC>0?abc.moC.toFixed(1):'∞';
 
     var avg3Label=isSingleMonth?'近3月均 ⚡':'近3月均';
 
     return '<div class="'+cardCls+'" onclick="showDetail(\''+code+'\',\''+escQ(name)+'\')">'
       +'<div class="pc-name">'+name+'</div>'
       +'<div class="pc-code">'+code+'</div>'
-      +'<div class="abc-row" style="margin-bottom:10px;margin-top:4px;">'
-      +'<div class="abc-cell '+cA+'"><div class="abc-lbl">A</div><div class="abc-date">'+(abc.dateA?fmtDate(abc.dateA):'∞')+'</div><div class="abc-mo">'+moAStr+'</div><div class="abc-sublbl">×100%</div></div>'
-      +'<div class="abc-cell '+cB+'"><div class="abc-lbl">B</div><div class="abc-date">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</div><div class="abc-mo">'+moBStr+'</div><div class="abc-sublbl">×120%</div></div>'
-      +'<div class="abc-cell '+cC+'"><div class="abc-lbl">C</div><div class="abc-date">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</div><div class="abc-mo">'+moCStr+'</div><div class="abc-sublbl">×135%</div></div>'
+      +'<div class="abc-list">'
+      +'<div class="abc-item '+cA+' abc-item-a">'
+        +'<span class="abc-item-scen">A <span class="abc-item-pct">×100%</span></span>'
+        +'<span class="abc-item-date">'+(abc.dateA?fmtDate(abc.dateA):'∞')+'</span>'
+        +'<span class="abc-item-mo">'+moA_num+'<span class="abc-item-unit">月</span></span>'
       +'</div>'
-      +'<div class="pc-stats">'
-      +'<div><div class="pc-stat-lbl">目前庫存</div><div class="pc-stat-val">'+fmt(abc.stock)+'<span class="pc-stat-unit"> 件</span></div></div>'
+      +'<div class="abc-item '+cB+' abc-item-bc">'
+        +'<span class="abc-item-scen">B <span class="abc-item-pct">×120%</span></span>'
+        +'<span class="abc-item-date">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</span>'
+        +'<span class="abc-item-mo">'+moB_num+'<span class="abc-item-unit">月</span></span>'
+      +'</div>'
+      +'<div class="abc-item '+cC+' abc-item-bc">'
+        +'<span class="abc-item-scen">C <span class="abc-item-pct">×135%</span></span>'
+        +'<span class="abc-item-date">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</span>'
+        +'<span class="abc-item-mo">'+moC_num+'<span class="abc-item-unit">月</span></span>'
+      +'</div>'
+      +'</div>'
+      +'<div class="pc-stats-row">'
+      +'<div><div class="pc-stat-lbl">庫存</div><div class="pc-stat-val">'+fmt(abc.stock)+'<span class="pc-stat-unit"> 件</span></div></div>'
       +'<div><div class="pc-stat-lbl">'+avg3Label+'</div><div class="pc-stat-val">'+abc.avg3.toFixed(1)+'<span class="pc-stat-unit"> 件/月</span></div></div>'
       +'</div>'
       +badge
