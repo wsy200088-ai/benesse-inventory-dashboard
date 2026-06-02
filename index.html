@@ -1263,6 +1263,22 @@ function showDetail(code,name){
 
   // ── 歷年生產入庫卡片 ──
   renderProdCard(code, abc.stock);
+
+  // ── 商品規格 ──
+  var dimsSection=document.getElementById('dimsSection');
+  var dd=DIMS[code];
+  if(dd){
+    dimsSection.style.display='';
+    var html='';
+    if(dd.barcode) html+='<div class="dims-spec-item"><div class="dims-spec-lbl">國際條碼（EAN/UPC）</div><div class="dims-spec-val dims-spec-mono">'+dd.barcode+'</div></div>';
+    if(dd.pkgType) html+='<div class="dims-spec-item"><div class="dims-spec-lbl">包裝方式</div><div class="dims-spec-val">'+dd.pkgType+'</div></div>';
+    if(dd.pkgMat)  html+='<div class="dims-spec-item"><div class="dims-spec-lbl">包裝材質</div><div class="dims-spec-val">'+dd.pkgMat+'</div></div>';
+    if(dd.l&&dd.w&&dd.h) html+='<div class="dims-spec-item"><div class="dims-spec-lbl">尺寸 L × W × H</div><div class="dims-spec-val dims-spec-mono">'+dd.l+' × '+dd.w+' × '+dd.h+' cm</div></div>';
+    if(dd.wt)      html+='<div class="dims-spec-item"><div class="dims-spec-lbl">單品重量</div><div class="dims-spec-val dims-spec-mono">'+dd.wt+' kg</div></div>';
+    document.getElementById('dimsContent').innerHTML=html;
+  } else {
+    dimsSection.style.display='none';
+  }
 }
 
 function renderProdCard(code, currentStock){
@@ -1504,9 +1520,10 @@ function renderP11Page(){
     var cA=abc.dateA?dateTdCls(abc.dateA):'d-gray';
     var cB=abc.dateB?dateTdCls(abc.dateB):'d-gray';
     var cC=abc.dateC?dateTdCls(abc.dateC):'d-gray';
-    return'<tr>'
+    var dimsBtn=DIMS[it.code]?'<button class="dims-toggle-btn" onclick="event.stopPropagation();toggleDimsRow(''+it.code+'',this)">📐</button>':'';
+    var mainRow='<tr>'
       +'<td class="td-code">'+it.code+'</td>'
-      +'<td>'+it.name+'</td>'
+      +'<td>'+it.name+dimsBtn+'</td>'
       +'<td><span class="td-ev">'+(it.ev2||it.ev)+'</span></td>'
       +'<td class="td-r td-mono">'+fmt(it.qty)+'</td>'
       +'<td class="td-r td-mono">'+fmt(it.val)+'</td>'
@@ -1516,8 +1533,28 @@ function renderP11Page(){
       +'<td class="td-c td-mono '+cB+'">'+(abc.dateB?fmtDate(abc.dateB):'∞')+'</td>'
       +'<td class="td-c td-mono '+cC+'">'+(abc.dateC?fmtDate(abc.dateC):'∞')+'</td>'
       +'</tr>';
+    var expandRow='';
+    if(DIMS[it.code]){
+      var dd=DIMS[it.code];
+      var items='';
+      if(dd.barcode) items+='<div class="dims-expand-item"><span class="dims-expand-lbl">EAN/UPC:</span><span class="dims-expand-val">'+dd.barcode+'</span></div>';
+      if(dd.pkgType) items+='<div class="dims-expand-item"><span class="dims-expand-lbl">包裝:</span><span class="dims-expand-val">'+dd.pkgType+(dd.pkgMat?' / '+dd.pkgMat:'')+'</span></div>';
+      if(dd.l&&dd.w&&dd.h) items+='<div class="dims-expand-item"><span class="dims-expand-lbl">尺寸:</span><span class="dims-expand-val">'+dd.l+' × '+dd.w+' × '+dd.h+' cm</span></div>';
+      if(dd.wt)      items+='<div class="dims-expand-item"><span class="dims-expand-lbl">重量:</span><span class="dims-expand-val">'+dd.wt+' kg</span></div>';
+      expandRow='<tr class="dims-expand-row" id="dims-expand-'+it.code+'">'
+        +'<td class="dims-expand-cell" colspan="12"><div class="dims-expand-inner">'+items+'</div></td>'
+        +'</tr>';
+    }
+    return mainRow+expandRow;
   }).join('')||'<tr class="empty-row"><td colspan="12">無資料</td></tr>';
   renderPag('p11Pag',P11_LIST.length,P11_PAGE,'p11GoPage');
+}
+
+function toggleDimsRow(code,btn){
+  var row=document.getElementById('dims-expand-'+code);
+  if(!row)return;
+  var open=row.classList.toggle('open');
+  btn.textContent=open?'▲':'📐';
 }
 
 function p11GoPage(p){P11_PAGE=p;renderP11Page();}
