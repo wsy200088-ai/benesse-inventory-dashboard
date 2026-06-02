@@ -1520,7 +1520,7 @@ function renderP11Page(){
     var cA=abc.dateA?dateTdCls(abc.dateA):'d-gray';
     var cB=abc.dateB?dateTdCls(abc.dateB):'d-gray';
     var cC=abc.dateC?dateTdCls(abc.dateC):'d-gray';
-    var dimsBtn=DIMS[it.code]?'<button class="dims-toggle-btn" onclick="event.stopPropagation();toggleDimsRow(''+it.code+'',this)">📐</button>':'';
+    var dimsBtn=DIMS[it.code]?'<button class="dims-toggle-btn" onclick="event.stopPropagation();toggleDimsRow(this.dataset.code,this)" data-code="'+it.code+'">📐</button>':'';
     var mainRow='<tr>'
       +'<td class="td-code">'+it.code+'</td>'
       +'<td>'+it.name+dimsBtn+'</td>'
