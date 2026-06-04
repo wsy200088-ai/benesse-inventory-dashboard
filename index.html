@@ -312,6 +312,7 @@ tbody tr:hover{background:#fafbff;}
   <button class="nav-btn" id="nav-p11" onclick="showPage('p11')">📦 P11 其他商品</button>
   <button class="nav-btn" id="nav-p12" onclick="showPage('p12')">⚠️ P12 有庫無銷</button>
   <button class="nav-btn" id="nav-p13" onclick="showPage('p13')">🔍 P13 滯銷篩選</button>
+  <button class="nav-btn" id="nav-puppet" onclick="showPage('puppet')">🐯 巧虎手偶</button>
 </div>
 
 <!-- ══════════════════════════════════════
@@ -552,6 +553,67 @@ tbody tr:hover{background:#fafbff;}
   </div>
 </div>
 
+<!-- ══════════════════════════════════════
+     PUPPET: 巧虎手偶 綜合統計
+══════════════════════════════════════ -->
+<div id="page-puppet" class="page">
+  <div class="page-hd">
+    <span class="page-title">🐯 巧虎手偶 綜合統計</span>
+    <span class="result-count">三製編合計：2018AC812 ＋ 20240FJ00 ＋ 20250FXAM</span>
+  </div>
+  <!-- KPI cards -->
+  <div class="info-grid" style="margin-bottom:12px;">
+    <div class="info-card">
+      <div class="info-card-ttl">近3月均銷量（合計）</div>
+      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetAvg3">—</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px;">件/月</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl">2018AC812 目前庫存</div>
+      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetStock">—</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="puppetStockVal">庫存金額：—</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl" style="color:var(--blue-dark)">A 完售預估（合計銷速）</div>
+      <div style="font-size:26px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetAbcA">—</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="puppetAbcAMo">可售月數：—</div>
+    </div>
+    <div class="info-card">
+      <div class="info-card-ttl">前一年累計（合計）</div>
+      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetYear">—</div>
+      <div style="font-size:12px;color:var(--text3);margin-top:2px;">件</div>
+    </div>
+  </div>
+  <!-- Chart -->
+  <div class="chart-card" style="margin-bottom:12px;">
+    <div class="chart-ttl">📈 月銷量趨勢（三製編堆疊）</div>
+    <div class="chart-wrap"><canvas id="puppetChart"></canvas></div>
+    <div class="chart-legend">
+      <span class="leg-item"><span class="leg-bar" style="background:#1d4ed8"></span>2018AC812 巧虎手偶</span>
+      <span class="leg-item"><span class="leg-bar" style="background:#7c3aed"></span>20240FJ00 互動遊戲組</span>
+      <span class="leg-item"><span class="leg-bar" style="background:#0891b2"></span>20250FXAM 手偶+說明信</span>
+    </div>
+  </div>
+  <!-- SKU breakdown table -->
+  <div class="table-card">
+    <div style="padding:10px 14px 6px;border-bottom:1px solid var(--border);">
+      <span class="page-title">各月份 × 製編銷量明細</span>
+    </div>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th>月份</th>
+          <th class="r">2018AC812<br><span style="font-weight:400;font-size:10px;">巧虎手偶</span></th>
+          <th class="r">20240FJ00<br><span style="font-weight:400;font-size:10px;">互動遊戲組</span></th>
+          <th class="r">20250FXAM<br><span style="font-weight:400;font-size:10px;">手偶+說明信</span></th>
+          <th class="r">合計</th>
+        </tr></thead>
+        <tbody id="puppetBody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 <script>
 // ════════════════════════════════════════════
 // AUTO-LOAD FROM data.json ON PAGE START
@@ -585,6 +647,7 @@ document.addEventListener('DOMContentLoaded', function(){
         renderP11();
         renderP12();
         renderP13();
+        renderPuppet();
       } else {
         document.getElementById('dataDate').textContent='尚未上傳資料';
       }
@@ -614,7 +677,7 @@ function loadFromJSON(data){
   });
 
   initEvPills();
-  renderP1(); renderP11(); renderP12(); renderP13();
+  renderP1(); renderP11(); renderP12(); renderP13(); renderPuppet();
   setStatus('ok','已從快取載入 '+ALL_ITEMS.length+' 筆｜'+data.dataDate);
   document.getElementById('dlJsonBtn').style.display='';
   document.getElementById('dlHtmlBtn').style.display='';
@@ -727,7 +790,12 @@ var GIFT_CODES=new Set(["3125HP011","3125HP010","3125HP009","3125HP008","3125HP0
 /*BAKE_PRODUCTION_START*/var PRODUCTION={"20200FA00":[{"year":"2022","date":"2022/10/31","qty":2000.0},{"year":"2023","date":"2024/01/04","qty":1000.0}],"20200FB00":[{"year":"2022","date":"2022/08/12","qty":1000.0},{"year":"2023","date":"2023/12/01","qty":800.0},{"year":"2024","date":"2024/07/01","qty":680.0}],"20201MY00":[{"year":"2022","date":"2022/08/24","qty":1500.0},{"year":"2022","date":"2022/12/05","qty":1500.0},{"year":"2023","date":"2023/07/03","qty":2050.0},{"year":"2024","date":"2024/04/12","qty":60.0}],"20220MY00":[{"year":"2022","date":"2022/04/25","qty":1000.0},{"year":"2022","date":"2022/08/05","qty":1500.0},{"year":"2023","date":"2024/01/04","qty":1400.0},{"year":"2024","date":"2024/07/22","qty":500.0},{"year":"2024","date":"2024/08/02","qty":1500.0},{"year":"2025","date":"2025/11/10","qty":2000.0}],"20240FA00":[{"year":"2024","date":"2024/10/07","qty":4000.0},{"year":"2024","date":"2024/10/31","qty":969.0}],"20240FC00":[{"year":"2024","date":"2024/10/07","qty":3000.0},{"year":"2024","date":"2025/02/06","qty":3000.0}],"20240FM00":[{"year":"2024","date":"2024/10/31","qty":900.0},{"year":"2024","date":"2025/02/06","qty":4000.0}],"20250FA00":[{"year":"2025","date":"2025/05/12","qty":2997.0},{"year":"2025","date":"2025/10/07","qty":500.0},{"year":"2025","date":"2025/10/08","qty":2411.0},{"year":"2025","date":"2025/10/31","qty":88.0}],"20250FD00":[{"year":"2025","date":"2025/10/09","qty":4993.0}],"20250FE00":[{"year":"2025","date":"2026/01/19","qty":950.0},{"year":"2025","date":"2026/01/23","qty":50.0},{"year":"2025","date":"2026/02/04","qty":3994.0}],"20250FF00":[{"year":"2025","date":"2026/02/24","qty":5000.0}],"20250FG00":[{"year":"2025","date":"2026/02/26","qty":4999.0}],"20230MY00":[{"year":"","date":"","qty":12955.0}]};/*BAKE_PRODUCTION_END*/
 /*BAKE_DIMS*/var DIMS={"20250FE00":{"barcode":"4712070594148","pkgType":"套組","pkgMat":"牛皮紙盒","l":26.5,"w":18.5,"h":6.5,"wt":0.985},"20250FF00":{"barcode":"4712070594308","pkgType":"套組","pkgMat":"牛皮紙盒","l":41.0,"w":27.0,"h":9.5,"wt":2.843},"20250FG00":{"barcode":"4712070595213","pkgType":"套組","pkgMat":"牛皮紙盒","l":32.5,"w":24.5,"h":10.0,"wt":2.47},"20250FA00":{"barcode":"4712070593486","pkgType":"套組","pkgMat":"彩盒","l":31.5,"w":21.5,"h":12.0,"wt":3.004},"20250FD00":{"barcode":"4712070594964","pkgType":"套組"},"2018AC812":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":29.0,"w":20.0,"h":0.5,"wt":0.076},"20240FA00":{"barcode":"4712070593080","pkgType":"原箱","pkgMat":"彩盒","l":44.0,"w":34.5,"h":16.5,"wt":3.145},"20252FA00":{"barcode":"4712070594780","pkgType":"原箱","pkgMat":"彩盒","l":30.0,"w":20.5,"h":6.0,"wt":0.278},"20240FM00":{"barcode":"4712070593219","pkgType":"原箱","pkgMat":"牛皮紙盒","l":33.5,"w":27.5,"h":10.0,"wt":2.325},"20240FB00":{"barcode":"4712070593325","pkgType":"套組","pkgMat":"彩盒","l":32.0,"w":22.5,"h":12.5,"wt":0.846},"20240H022":{"barcode":"4712070593097","pkgType":"套組","pkgMat":"彩盒","l":22.0,"w":20.0,"h":10.0,"wt":0.451},"20220MY00":{"barcode":"4712070594957","pkgType":"原盒","pkgMat":"牛皮紙盒","l":30.0,"w":24.0,"h":17.0,"wt":2.34},"20240H023":{"barcode":"4712070593103","pkgType":"套組","pkgMat":"彩盒","l":26.0,"w":19.5,"h":12.0,"wt":0.777},"20220H009":{"barcode":"4904810499114"},"20240EA08":{"barcode":"4973307654169"},"20240EC01":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":36.0,"w":26.0,"h":0.5,"wt":0.095},"20230H032":{"pkgType":"原盒","pkgMat":"紙盒","l":19.5,"w":9.0,"h":9.0,"wt":0.185},"20191C710":{"pkgType":"本冊類","pkgMat":"裸裝","l":17.5,"w":17.5,"h":1.0,"wt":0.207},"20220EA00":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":39.0,"w":2.0,"h":2.0,"wt":0.023},"20240H027":{"barcode":"4570118174970","pkgType":"原盒","pkgMat":"彩盒","l":33.0,"w":27.0,"h":10.0,"wt":1.313},"20220H010":{"barcode":"4904810490036"},"20240H042":{"barcode":"4712070593479"},"20230KA00":{"barcode":"4712070592878","pkgType":"原包裝","pkgMat":"塑膠袋","l":57.0,"w":34.0,"h":10.0,"wt":0.528},"20203C601":{"pkgType":"原盒","pkgMat":"紙盒","l":15.0,"w":8.5,"h":3.5,"wt":0.14},"20240EC04":{"barcode":"4712070595176"},"20211C608":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":21.0,"w":18.5,"h":0.6,"wt":0.075},"20235C602":{"pkgType":"原盒","pkgMat":"紙盒","l":9.5,"w":8.0,"h":4.0,"wt":0.065},"20240H013":{"barcode":"4712070592977"},"20232C609":{"pkgType":"原盒","pkgMat":"紙盒","l":15.5,"w":14.0,"h":7.0,"wt":0.215},"20250FB03":{"pkgType":"套組","pkgMat":"熱縮膜","l":21.0,"w":15.0,"h":5.5,"wt":1.313},"20250FC03":{"pkgType":"套組","pkgMat":"熱縮膜","l":21.0,"w":15.0,"h":5.5,"wt":1.317},"20250FC01":{"pkgType":"套組","pkgMat":"熱縮膜","l":21.0,"w":15.0,"h":5.5,"wt":1.309},"20230PM04":{"pkgType":"原盒","pkgMat":"紙盒","l":12.0,"w":11.0,"h":14.0,"wt":0.184},"20224PB02":{"barcode":"4713224774102","pkgType":"原包裝","pkgMat":"熱縮膜","l":23.0,"w":14.0,"h":2.5,"wt":0.278},"2023MPB03":{"pkgType":"原盒","pkgMat":"紙盒","l":17.0,"w":13.0,"h":15.0,"wt":0.32},"20230H001":{"barcode":"4712070592762","pkgType":"原包裝","pkgMat":"塑膠袋","l":22.0,"w":11.0,"h":4.0,"wt":0.175},"20233PB02":{"barcode":"4716503074627","pkgType":"原盒","pkgMat":"紙盒","l":25.0,"w":13.0,"h":4.5,"wt":0.25},"2023TPM01":{"barcode":"4714809703685","pkgType":"本冊類","pkgMat":"塑膠袋","l":25.5,"w":18.0,"h":0.5,"wt":0.17},"20221C6B6":{"pkgType":"原盒","pkgMat":"紙盒","l":16.0,"w":15.5,"h":9.5,"wt":0.404},"2023MPB01":{"pkgType":"原盒","pkgMat":"紙盒","l":22.0,"w":19.0,"h":10.0,"wt":0.494},"20251PB02":{"pkgType":"原盒","pkgMat":"紙盒","l":12.0,"w":10.5,"h":3.0,"wt":0.09},"20210PP12":{"barcode":"6958469594124","pkgType":"原盒","pkgMat":"紙盒","l":35.0,"w":23.0,"h":1.0,"wt":0.234},"20190PP04":{"barcode":"6958469508084","pkgType":"原包裝","pkgMat":"熱縮膜","l":16.0,"w":6.0,"h":6.0,"wt":0.17},"20220PP02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":22.0,"w":29.0,"h":0.5,"wt":0.248},"20221PB04":{"pkgType":"原盒","pkgMat":"紙盒","l":11.0,"w":11.0,"h":8.5,"wt":0.125},"20235C603":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":16.0,"w":14.0,"h":5.0,"wt":0.326},"20223PW01":{"barcode":"4714809703685","pkgType":"本冊類","pkgMat":"裸裝","l":25.5,"w":18.0,"h":0.5,"wt":0.17},"20215PB01":{"barcode":"4716503012902","pkgType":"原盒","pkgMat":"紙盒","l":14.0,"w":13.0,"h":5.0,"wt":0.105},"20233PB0M":{"pkgType":"原盒","pkgMat":"紙盒","l":22.0,"w":10.0,"h":5.5,"wt":0.257},"20221PB03":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":10.0,"w":7.0,"h":7.0,"wt":0.111},"20233PB0M-L":{"pkgMat":"裸裝"},"20222C606":{"pkgType":"原盒","pkgMat":"紙盒","l":21.5,"w":16.5,"h":3.0,"wt":0.2},"2023FPB01":{"pkgType":"原盒","pkgMat":"紙盒","l":16.0,"w":10.0,"h":5.5,"wt":0.185},"20230PP02":{"pkgType":"原盒","pkgMat":"紙盒","l":36.0,"w":29.0,"h":4.5,"wt":0.685},"20220PQ01":{"pkgType":"本冊類","pkgMat":"裸裝","l":16.5,"w":18.0,"h":1.5,"wt":0.385},"20234C603":{"pkgType":"原盒","pkgMat":"紙盒","l":13.5,"w":14.5,"h":8.0,"wt":0.265},"20210PP08":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":5.5,"w":5.0,"h":0.5,"wt":0.031},"20231PB04":{"pkgType":"原盒","pkgMat":"紙盒","l":23.0,"w":13.5,"h":4.0,"wt":0.253},"20240PP06":{"barcode":"6927049010323","pkgType":"原盒","pkgMat":"紙盒","l":20.0,"w":20.0,"h":5.5,"wt":0.44},"20212C603":{"pkgType":"原盒","pkgMat":"紙盒","l":16.5,"w":15.5,"h":9.0,"wt":0.251},"20230PM03":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":24.5,"w":19.0,"h":3.0,"wt":0.295},"20231PB02":{"pkgType":"本冊類","pkgMat":"裸裝","l":17.5,"w":17.5,"h":0.6,"wt":0.15},"2022MPB04":{"barcode":"6936352521082","pkgType":"原包裝","pkgMat":"熱縮膜","l":22.0,"w":17.0,"h":5.0,"wt":0.636},"20225PB02":{"barcode":"4716503220505","pkgType":"原盒","pkgMat":"彩盒","l":14.0,"w":13.0,"h":5.0,"wt":0.138},"20210PQ01":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":7.0,"w":9.0,"h":2.0,"wt":0.086},"20205C602":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":25.0,"w":12.0,"h":2.0,"wt":0.031},"20200PP02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":36.0,"w":35.0,"h":3.0,"wt":0.321},"20234C610":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":26.5,"w":19.0,"h":4.5,"wt":0.291},"2020GPS01":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":31.0,"w":23.0,"h":0.5,"wt":0.055},"20241PA0F":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":19.0,"w":16.0,"h":3.0,"wt":0.17},"20196PB03":{"barcode":"4716503074368","pkgType":"原包裝","pkgMat":"熱縮膜","l":21.0,"w":13.0,"h":6.0,"wt":0.165},"20192X612":{"pkgType":"原盒","pkgMat":"紙盒","l":15.5,"w":15.5,"h":2.5,"wt":0.237},"20242CH01":{"pkgType":"本冊類","pkgMat":"裸裝","l":12.5,"w":12.5,"h":0.1,"wt":0.013},"20220M602":{"pkgType":"原盒","pkgMat":"紙盒","l":15.5,"w":14.0,"h":3.0,"wt":0.22},"2022MPB01":{"pkgType":"原盒","pkgMat":"紙盒","l":14.5,"w":5.5,"h":4.5,"wt":0.76},"20220PM02":{"pkgType":"原盒","pkgMat":"紙盒","l":23.0,"w":18.5,"h":3.5,"wt":0.26},"20221C612":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":20.5,"w":10.5,"h":2.5,"wt":0.271},"20221PB02":{"barcode":"4718733256095","pkgType":"原盒","pkgMat":"紙盒","l":15.0,"w":14.5,"h":7.0,"wt":0.212},"20200H005":{"barcode":"2019030610064","pkgType":"原包裝","pkgMat":"熱縮膜","l":12.5,"w":9.0,"h":3.0,"wt":0.181},"2023GPS02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":25.0,"w":15.0,"h":6.0,"wt":0.4},"2022MPB02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":17.0,"w":11.0,"h":6.0,"wt":0.15},"20245C605":{"pkgType":"本冊類","pkgMat":"塑膠袋","l":30.0,"w":22.0,"h":0.3,"wt":0.2},"2022MPB03":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":31.0,"w":19.0,"h":9.0,"wt":0.572},"20240FD00":{"barcode":"4712070593332","pkgType":"原盒","pkgMat":"彩盒","l":29.0,"w":23.0,"h":8.0,"wt":0.945},"20201MY00":{"pkgType":"套組","pkgMat":"牛皮紙盒","l":32.0,"w":32.0,"h":23.0,"wt":3.377},"20240FJ00":{"barcode":"4712070593059","pkgType":"套組","pkgMat":"彩盒","l":28.5,"w":20.5,"h":7.0,"wt":0.344},"20200FA06":{"barcode":"4712070593202","pkgType":"原盒","pkgMat":"紙盒","l":25.5,"w":19.0,"h":3.0,"wt":0.392},"20204C603":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":21.5,"w":17.0,"h":3.0,"wt":0.278},"2021FCV01-1":{"pkgType":"原包裝","pkgMat":"熱縮膜","l":37.5,"w":25.5,"h":0.5,"wt":0.313},"2021TPB0J":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":31.5,"w":20.5,"h":0.2,"wt":0.1},"2021FPB01":{"pkgType":"原盒","pkgMat":"紙盒","l":18.5,"w":15.0,"h":5.5,"wt":0.163},"20231PB0F":{"pkgType":"原盒","pkgMat":"塑膠袋","l":23.0,"w":11.0,"h":2.5,"wt":0.068},"20225PB01":{"pkgType":"原盒","pkgMat":"紙盒","l":23.0,"w":7.0,"h":2.0,"wt":0.069},"2023FC912":{"pkgType":"本冊類","pkgMat":"裸裝","l":19.0,"w":13.0,"h":0.5,"wt":0.205},"20221PR02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":18.0,"w":18.0,"h":0.3,"wt":0.019},"20221PB0K":{"pkgType":"原盒","pkgMat":"紙盒","l":13.5,"w":13.0,"h":13.0,"wt":0.202},"20223PB01":{"pkgType":"原盒","pkgMat":"紙盒","l":5.5,"w":5.0,"h":2.0,"wt":0.219},"20232C607":{"pkgType":"原盒","pkgMat":"紙盒","l":15.5,"w":15.5,"h":2.0,"wt":0.219},"20202C605":{"pkgType":"原盒","pkgMat":"彩盒","l":18.0,"w":12.0,"h":5.0,"wt":0.246},"20220M101":{"pkgType":"本冊類","pkgMat":"裸裝","l":20.0,"w":5.0,"h":0.5,"wt":0.185},"20220M102":{"pkgType":"本冊類","pkgMat":"裸裝","l":20.0,"w":5.0,"h":0.5,"wt":0.155},"20200PP03":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":36.0,"w":35.0,"h":3.0,"wt":0.368},"2017AC110":{"pkgType":"本冊類","pkgMat":"裸裝","l":15.0,"w":15.0,"h":0.5,"wt":0.1},"2017AC111":{"pkgType":"本冊類","pkgMat":"裸裝","l":15.0,"w":15.0,"h":0.5,"wt":0.18},"2017AC121":{"pkgType":"本冊類","pkgMat":"裸裝","l":15.0,"w":15.0,"h":0.5,"wt":0.091},"20243C704":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":12.0,"w":12.0,"h":5.0,"wt":0.15},"20243C605":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":8.0,"w":7.5,"h":1.0,"wt":0.017},"20243C606":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":21.0,"w":14.0,"h":2.0,"wt":0.184},"20193CE02":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":9.0,"w":8.0,"h":2.0,"wt":0.01},"20240FP00":{"barcode":"4712070593073","pkgType":"套組","pkgMat":"塑膠袋","l":24.0,"w":20.0,"h":7.0,"wt":0.309},"20221C604":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":29.0,"w":17.0,"h":6.0,"wt":0.41},"20212PB0C":{"pkgType":"原包裝","pkgMat":"塑膠袋","l":30.0,"w":15.0,"h":0.5,"wt":0.192}};
 
-var salesChartInst=null, invChartInst=null;
+var salesChartInst=null, invChartInst=null, puppetChartInst=null;
+var PUPPET_SKUS=[
+  {code:'2018AC812',name:'巧虎手偶',color:'#1d4ed8'},
+  {code:'20240FJ00',name:'互動遊戲組',color:'#7c3aed'},
+  {code:'20250FXAM',name:'手偶+說明信',color:'#0891b2'}
+];
 var P11_LIST=[], P11_PAGE=1;
 var P13_LIST=[], P13_PAGE=1;
 var P13_VAL=0, P13_MO=0;
@@ -1014,6 +1082,7 @@ function parseXL(wb,fname){
     renderP11();
     renderP12();
     renderP13();
+    renderPuppet();
 
     setStatus('ok','載入成功 '+ALL_ITEMS.length+' 筆｜'+dataDate+'｜'+MONTHS.length+'個月資料');
     document.getElementById('dlJsonBtn').style.display='';
@@ -1670,6 +1739,81 @@ function renderP13Page(){
 }
 
 function p13GoPage(p){P13_PAGE=p;renderP13Page();}
+
+// ════════════════════════════════════════════
+// PUPPET: 巧虎手偶 綜合統計
+// ════════════════════════════════════════════
+function renderPuppet(){
+  // ── KPIs ──
+  var avg3=getAvgN('2018AC812',3);
+  document.getElementById('puppetAvg3').textContent=avg3.toFixed(1);
+
+  var invItem=INV['2018AC812'];
+  var stock=invItem?Math.round(invItem.qty):0;
+  var stockVal=invItem?Math.round(invItem.val):0;
+  document.getElementById('puppetStock').textContent=fmt(stock)+' 件';
+  document.getElementById('puppetStockVal').textContent='庫存金額：'+fmt(stockVal);
+
+  var abc=getABC('2018AC812');
+  var abcColorMap={'d-green':'var(--green)','d-yellow':'var(--yellow)','d-orange':'var(--orange)','d-red':'var(--red)','d-gray':'#9aa0b4'};
+  var abcAEl=document.getElementById('puppetAbcA');
+  if(abc.dateA){
+    abcAEl.textContent=fmtDate(abc.dateA);
+    abcAEl.style.color=abcColorMap[dateTdCls(abc.dateA)]||'';
+    document.getElementById('puppetAbcAMo').textContent='可售月數：'+abc.a.toFixed(1)+'M';
+  } else {
+    abcAEl.textContent='∞';
+    abcAEl.style.color='#9aa0b4';
+    document.getElementById('puppetAbcAMo').textContent='可售月數：—';
+  }
+
+  var yearTotal=getYearTotal('2018AC812');
+  document.getElementById('puppetYear').textContent=fmt(Math.round(yearTotal));
+
+  // ── Chart (stacked bar per SKU) ──
+  var past=MONTHS.slice(-12);
+  var labels=past.map(fmtM);
+  var datasets=PUPPET_SKUS.map(function(sku){
+    var m=SALES[sku.code]?SALES[sku.code].m:{};
+    return {
+      label:sku.code+' '+sku.name,
+      data:past.map(function(mo){return m[mo]||0;}),
+      backgroundColor:sku.color,
+      borderRadius:2,
+      stack:'all'
+    };
+  });
+  var ctx=document.getElementById('puppetChart');
+  if(ctx){
+    if(puppetChartInst){puppetChartInst.destroy();puppetChartInst=null;}
+    puppetChartInst=new Chart(ctx,{
+      type:'bar',
+      data:{labels:labels,datasets:datasets},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{mode:'index',intersect:false,callbacks:{
+          footer:function(items){var t=items.reduce(function(s,i){return s+(i.parsed.y||0);},0);return t>0?'合計：'+t+' 件':null;}
+        }}},
+        scales:{
+          x:{stacked:true,grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
+          y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4'}}
+        }
+      }
+    });
+  }
+
+  // ── Table (newest month first) ──
+  var rows=past.slice().reverse().map(function(mo,i){
+    var vals=PUPPET_SKUS.map(function(sku){return SALES[sku.code]?SALES[sku.code].m[mo]||0:0;});
+    var total=vals.reduce(function(a,v){return a+v;},0);
+    var isRecent=i<3;
+    return '<tr'+(isRecent?' class="latest"':'')+'>'
+      +'<td class="td-code">'+fmtM(mo)+'</td>'
+      +vals.map(function(v){return '<td class="td-r td-mono">'+(v>0?fmt(v):'—')+'</td>';}).join('')
+      +'<td class="td-r td-mono" style="font-weight:600">'+(total>0?fmt(total):'—')+'</td>'
+      +'</tr>';
+  }).join('');
+  document.getElementById('puppetBody').innerHTML=rows;
+}
 
 // ════════════════════════════════════════════
 // PAGINATION HELPER
