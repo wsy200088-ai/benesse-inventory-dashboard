@@ -10,7 +10,7 @@
 <style>
 :root{
   --bg:#f4f6f9;--white:#fff;--border:#e2e6ed;--border2:#d0d5e0;
-  --text:#1a1f2e;--text2:#5a6278;--text3:#9aa0b4;
+  --text:#1a1f2e;--text2:#374151;--text3:#64748b;
   --blue:#3b82f6;--blue-bg:#eff6ff;--blue-dark:#1d4ed8;
   --red:#dc2626;--red-bg:#fef2f2;
   --orange:#ea580c;--orange-bg:#fff7ed;
@@ -285,6 +285,82 @@ tbody tr:hover{background:#fafbff;}
 .ev-pill.active{background:#faadac;border-color:#f87171;color:#7f1d1d;}
 .ev-summary{width:100%;font-size:11px;color:var(--text3);padding-top:4px;letter-spacing:.03em;}
 .td-dim{color:#cbd5e1!important;}
+
+/* ── 140% 字級放大 ── */
+body{font-size:20px;line-height:1.6;}
+.logo{font-size:14px;}
+.header-title{font-size:21px;}
+.data-date{font-size:15px;}
+.upload-btn{font-size:18px;padding:8px 20px;}
+.upload-status{font-size:15px;}
+.nav-btn{font-size:18px;padding:13px 22px;}
+.no-data h3{font-size:25px;}
+.no-data p{font-size:18px;}
+.no-data .upload-hint{font-size:18px;}
+.page-title{font-size:17px;}
+.result-count{font-size:17px;}
+.pc-name{font-size:29px;}
+.pc-code{font-size:20px;}
+.pc-stat-lbl{font-size:21px;}
+.pc-stat-val{font-size:34px;}
+.pc-stat-unit{font-size:20px;}
+.abc-lbl{font-size:14px;}
+.abc-date{font-size:17px;}
+.abc-mo{font-size:13px;}
+.abc-sublbl{font-size:13px;}
+.warn-badge,.caution-badge,.single-month-badge,.reorder-badge{font-size:21px;}
+.detail-back{font-size:18px;}
+.detail-name{font-size:25px;}
+.detail-code{font-size:17px;}
+.dkpi-lbl{font-size:15px;}
+.dkpi-val{font-size:31px;}
+.dkpi-unit{font-size:15px;}
+.chart-ttl{font-size:15px;}
+.leg-item{font-size:15px;}
+.info-card-ttl{font-size:14px;}
+.info-row{font-size:17px;}
+.info-lbl{font-size:17px;}
+.search-input{font-size:18px;}
+table{font-size:18px;}
+thead th{font-size:15px;}
+.td-mono{font-size:18px;}
+.td-code{font-size:15px;}
+.td-ev{font-size:15px;padding:3px 9px;}
+.page-btn{font-size:17px;padding:5px 13px;}
+.pag-info{font-size:15px;}
+.f-lbl{font-size:15px;}
+.pill{font-size:17px;padding:5px 15px;}
+.pc-prod-title,.pc-prod-yr,.pc-prod-qty,.pc-prod-total{font-size:21px;}
+.p1-legend-title{font-size:22px;}
+.p1-abc-leg-item{font-size:22px;}
+.p1-lead-note{font-size:21px;}
+.p1-urgent-hd{font-size:25px;}
+.p1-urgent-chip{font-size:22px;}
+.abc-item-scen{font-size:22px;}
+.abc-item-pct{font-size:18px;}
+.abc-item-date{font-size:27px;}
+.abc-item-unit{font-size:20px;}
+.abc-item-a .abc-item-mo{font-size:46px;}
+.abc-item-bc .abc-item-mo{font-size:34px;}
+.pc-note{font-size:20px;}
+.pc-note-lbl{font-size:17px;}
+.prod-table{font-size:18px;}
+.prod-table th{font-size:17px;}
+.prod-table tr.latest td:last-child::after{font-size:15px;}
+.prod-summary{font-size:18px;}
+.prod-summary-lbl{font-size:15px;}
+.prod-summary-val{font-size:21px;}
+.prod-summary-note{font-size:14px;}
+.prod-bar-lbl{font-size:17px;}
+.dims-spec-lbl{font-size:15px;}
+.dims-spec-val{font-size:20px;}
+.dims-toggle-btn{font-size:15px;padding:2px 8px;}
+.dims-expand-inner{font-size:17px;}
+.dims-expand-lbl{font-size:17px;}
+.filter-label{font-size:17px;}
+.ev-pill{font-size:17px;padding:5px 15px;}
+.ev-summary{font-size:15px;}
+.empty-row td{font-size:18px;}
 </style>
 </head>
 <body>
@@ -565,23 +641,23 @@ tbody tr:hover{background:#fafbff;}
   <div class="info-grid" style="margin-bottom:12px;">
     <div class="info-card">
       <div class="info-card-ttl">近3月均銷量（合計）</div>
-      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetAvg3">355.0</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;">件/月</div>
+      <div style="font-size:42px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetAvg3">355.0</div>
+      <div style="font-size:17px;color:var(--text3);margin-top:4px;">件/月</div>
     </div>
     <div class="info-card">
       <div class="info-card-ttl">2018AC812 目前庫存</div>
-      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetStock">1,251 件</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="puppetStockVal">庫存金額：91,861</div>
+      <div style="font-size:42px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetStock">1,251 件</div>
+      <div style="font-size:17px;color:var(--text3);margin-top:4px;" id="puppetStockVal">庫存金額：91,861</div>
     </div>
     <div class="info-card">
       <div class="info-card-ttl" style="color:var(--blue-dark)">A 完售預估（合計銷速）</div>
-      <div style="font-size: 26px; font-weight: 700; font-family: var(--mono); line-height: 1.1; color: var(--red);" id="puppetAbcA">2026/09</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="puppetAbcAMo">可售月數：355.0M</div>
+      <div style="font-size:36px;font-weight:700;font-family:var(--mono);line-height:1.1;color:var(--red);" id="puppetAbcA">2026/09</div>
+      <div style="font-size:17px;color:var(--text3);margin-top:4px;" id="puppetAbcAMo">可售月數：355.0M</div>
     </div>
     <div class="info-card">
       <div class="info-card-ttl">前一年累計（合計）</div>
-      <div style="font-size:30px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetYear">4,002</div>
-      <div style="font-size:12px;color:var(--text3);margin-top:2px;">件</div>
+      <div style="font-size:42px;font-weight:700;font-family:var(--mono);line-height:1.1;" id="puppetYear">4,002</div>
+      <div style="font-size:17px;color:var(--text3);margin-top:4px;">件</div>
     </div>
   </div>
   <!-- Chart -->
@@ -603,9 +679,9 @@ tbody tr:hover{background:#fafbff;}
       <table>
         <thead><tr>
           <th>月份</th>
-          <th class="r">2018AC812<br><span style="font-weight:400;font-size:10px;">巧虎手偶</span></th>
-          <th class="r">20240FJ00<br><span style="font-weight:400;font-size:10px;">互動遊戲組</span></th>
-          <th class="r">20250FXAM<br><span style="font-weight:400;font-size:10px;">手偶+說明信</span></th>
+          <th class="r">2018AC812<br><span style="font-weight:400;font-size:14px;">巧虎手偶</span></th>
+          <th class="r">20240FJ00<br><span style="font-weight:400;font-size:14px;">互動遊戲組</span></th>
+          <th class="r">20250FXAM<br><span style="font-weight:400;font-size:14px;">手偶+說明信</span></th>
           <th class="r">合計</th>
         </tr></thead>
         <tbody id="puppetBody"><tr class="latest"><td class="td-code">2026/05</td><td class="td-r td-mono">97</td><td class="td-r td-mono">—</td><td class="td-r td-mono">133</td><td class="td-r td-mono" style="font-weight:600">230</td></tr><tr class="latest"><td class="td-code">2026/04</td><td class="td-r td-mono">148</td><td class="td-r td-mono">17</td><td class="td-r td-mono">188</td><td class="td-r td-mono" style="font-weight:600">353</td></tr><tr class="latest"><td class="td-code">2026/03</td><td class="td-r td-mono">138</td><td class="td-r td-mono">120</td><td class="td-r td-mono">224</td><td class="td-r td-mono" style="font-weight:600">482</td></tr><tr><td class="td-code">2026/02</td><td class="td-r td-mono">121</td><td class="td-r td-mono">55</td><td class="td-r td-mono">193</td><td class="td-r td-mono" style="font-weight:600">369</td></tr><tr><td class="td-code">2026/01</td><td class="td-r td-mono">101</td><td class="td-r td-mono">47</td><td class="td-r td-mono">225</td><td class="td-r td-mono" style="font-weight:600">373</td></tr><tr><td class="td-code">2025/12</td><td class="td-r td-mono">106</td><td class="td-r td-mono">1</td><td class="td-r td-mono">162</td><td class="td-r td-mono" style="font-weight:600">269</td></tr><tr><td class="td-code">2025/11</td><td class="td-r td-mono">101</td><td class="td-r td-mono">11</td><td class="td-r td-mono">200</td><td class="td-r td-mono" style="font-weight:600">312</td></tr><tr><td class="td-code">2025/10</td><td class="td-r td-mono">92</td><td class="td-r td-mono">127</td><td class="td-r td-mono">182</td><td class="td-r td-mono" style="font-weight:600">401</td></tr><tr><td class="td-code">2025/09</td><td class="td-r td-mono">—</td><td class="td-r td-mono">324</td><td class="td-r td-mono">—</td><td class="td-r td-mono" style="font-weight:600">324</td></tr><tr><td class="td-code">2025/08</td><td class="td-r td-mono">—</td><td class="td-r td-mono">315</td><td class="td-r td-mono">—</td><td class="td-r td-mono" style="font-weight:600">315</td></tr><tr><td class="td-code">2025/07</td><td class="td-r td-mono">—</td><td class="td-r td-mono">283</td><td class="td-r td-mono">—</td><td class="td-r td-mono" style="font-weight:600">283</td></tr><tr><td class="td-code">2025/06</td><td class="td-r td-mono">—</td><td class="td-r td-mono">291</td><td class="td-r td-mono">—</td><td class="td-r td-mono" style="font-weight:600">291</td></tr></tbody>
@@ -1472,8 +1548,8 @@ function drawSalesChart(code,abc){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.parsed.y!=null?c.dataset.label+': '+c.parsed.y+' 件':null;}}}},
       scales:{
-        x:{grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
-        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4'}}
+        x:{grid:{display:false},ticks:{font:{size:13},color:'#64748b',maxRotation:45,autoSkip:true}},
+        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:13},color:'#64748b'}}
       }
     }
   });
@@ -1507,8 +1583,8 @@ function drawInvChart(code,abc){
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:14,padding:8}}},
       scales:{
-        x:{grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
-        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4',callback:function(v){return fmt(v);}}}
+        x:{grid:{display:false},ticks:{font:{size:13},color:'#64748b',maxRotation:45,autoSkip:true}},
+        y:{beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:13},color:'#64748b',callback:function(v){return fmt(v);}}}
       }
     }
   });
@@ -1776,7 +1852,7 @@ function renderPuppet(){
   document.getElementById('puppetStockVal').textContent='庫存金額：'+fmt(stockVal);
 
   var abc=getABC('2018AC812');
-  var abcColorMap={'d-green':'var(--green)','d-yellow':'var(--yellow)','d-orange':'var(--orange)','d-red':'var(--red)','d-gray':'#9aa0b4'};
+  var abcColorMap={'d-green':'var(--green)','d-yellow':'var(--yellow)','d-orange':'var(--orange)','d-red':'var(--red)','d-gray':'var(--text3)'};
   var abcAEl=document.getElementById('puppetAbcA');
   if(abc.dateA){
     abcAEl.textContent=fmtDate(abc.dateA);
@@ -1784,7 +1860,7 @@ function renderPuppet(){
     document.getElementById('puppetAbcAMo').textContent='可售月數：'+abc.a.toFixed(1)+'M';
   } else {
     abcAEl.textContent='∞';
-    abcAEl.style.color='#9aa0b4';
+    abcAEl.style.color='var(--text3)';
     document.getElementById('puppetAbcAMo').textContent='可售月數：—';
   }
 
@@ -1815,8 +1891,8 @@ function renderPuppet(){
           footer:function(items){var t=items.reduce(function(s,i){return s+(i.parsed.y||0);},0);return t>0?'合計：'+t+' 件':null;}
         }}},
         scales:{
-          x:{stacked:true,grid:{display:false},ticks:{font:{size:9},color:'#9aa0b4',maxRotation:45,autoSkip:true}},
-          y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:9},color:'#9aa0b4'}}
+          x:{stacked:true,grid:{display:false},ticks:{font:{size:13},color:'#64748b',maxRotation:45,autoSkip:true}},
+          y:{stacked:true,beginAtZero:true,grid:{color:'#f1f5f9'},ticks:{font:{size:13},color:'#64748b'}}
         }
       }
     });
