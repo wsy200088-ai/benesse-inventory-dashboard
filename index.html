@@ -403,19 +403,33 @@ thead th{font-size:15px;}
 .pill-dept.active{background:#8b5cf6;border-color:#7c3aed;color:#fff;}
 .pill-ev{border-color:#86efac;color:#14532d;background:#dcfce7;}
 .pill-ev.active{background:#22c55e;border-color:#15803d;color:#fff;}
-/* KPI bar */
-.analysis-kpi-bar{display:flex;gap:28px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:var(--radius);padding:14px 22px;margin-bottom:14px;align-items:center;flex-wrap:wrap;}
-.analysis-kpi-item{text-align:center;}
-.analysis-kpi-lbl{font-size:11px;color:var(--text3);}
-.analysis-kpi-num{font-size:22px;font-weight:700;color:var(--text);font-family:var(--mono);}
+/* KPI cards */
+.analysis-kpi-bar{display:flex;gap:16px;background:transparent;border:none;padding:0;margin-bottom:14px;}
+.kpi-card{flex:1;border-radius:var(--radius);padding:16px 24px;text-align:center;min-width:0;}
+.kpi-card-lbl{font-size:12px;font-weight:700;margin-bottom:8px;letter-spacing:.04em;}
+.kpi-card-num{font-size:30px;font-weight:800;font-family:var(--mono);line-height:1.1;}
+.kpi-card-unit{font-size:12px;margin-top:5px;opacity:.8;}
+.kpi-val{background:#dcfce7;border:1.5px solid #86efac;}
+.kpi-val .kpi-card-lbl{color:#15803d;}
+.kpi-val .kpi-card-num{color:#166534;}
+.kpi-val .kpi-card-unit{color:#15803d;}
+.kpi-qty{background:#fef3c7;border:1.5px solid #fcd34d;}
+.kpi-qty .kpi-card-lbl{color:#92400e;}
+.kpi-qty .kpi-card-num{color:#78350f;}
+.kpi-qty .kpi-card-unit{color:#92400e;}
+.kpi-cnt{background:#e0f2fe;border:1.5px solid #7dd3fc;}
+.kpi-cnt .kpi-card-lbl{color:#0369a1;}
+.kpi-cnt .kpi-card-num{color:#075985;}
+.kpi-cnt .kpi-card-unit{color:#0369a1;}
 /* 140% overrides */
 .analysis-dim-title{font-size:18px;}
 .analysis-bar-lbl{font-size:16px;}
 .analysis-bar-val{font-size:16px;}
 .analysis-bar-pct{font-size:15px;}
 .analysis-filter-title{font-size:17px;}
-.analysis-kpi-lbl{font-size:15px;}
-.analysis-kpi-num{font-size:30px;}
+.kpi-card-lbl{font-size:17px;}
+.kpi-card-num{font-size:40px;}
+.kpi-card-unit{font-size:16px;}
 .analysis-bar-track{height:18px;border-radius:9px;}
 </style>
 </head>
@@ -782,9 +796,21 @@ thead th{font-size:15px;}
     <div class="analysis-filter-area" id="analysisFilters"><div class="analysis-filter-group fgrp-gift"><span class="analysis-filter-title">禮物分類：</span><button class="qbtn" onclick="analysisSelectAll('gift')">全選</button><button class="qbtn" onclick="analysisClearAll('gift')">清除</button><span class="ev-pills" id="apills-gift"><button class="ev-pill pill-gift active" data-key="gift" data-val="禮物" onclick="toggleAnalysisF('gift','禮物',this)">禮物</button><button class="ev-pill pill-gift active" data-key="gift" data-val="非禮物" onclick="toggleAnalysisF('gift','非禮物',this)">非禮物</button></span></div><div class="analysis-filter-group fgrp-reduce"><span class="analysis-filter-title">2703減價：</span><button class="qbtn" onclick="analysisSelectAll('reduce')">全選</button><button class="qbtn" onclick="analysisClearAll('reduce')">清除</button><span class="ev-pills" id="apills-reduce"><button class="ev-pill pill-reduce active" data-key="reduce" data-val="減價對象" onclick="toggleAnalysisF('reduce','減價對象',this)">減價對象</button><button class="ev-pill pill-reduce active" data-key="reduce" data-val="非減價對象" onclick="toggleAnalysisF('reduce','非減價對象',this)">非減價對象</button></span></div><div class="analysis-filter-group fgrp-prod"><span class="analysis-filter-title">生產方式：</span><button class="qbtn" onclick="analysisSelectAll('prod')">全選</button><button class="qbtn" onclick="analysisClearAll('prod')">清除</button><span class="ev-pills" id="apills-prod"><button class="ev-pill pill-prod active" data-key="prod" data-val="以外" onclick="toggleAnalysisF('prod','以外',this)">以外</button><button class="ev-pill pill-prod active" data-key="prod" data-val="倍樂生" onclick="toggleAnalysisF('prod','倍樂生',this)">倍樂生</button></span></div><div class="analysis-filter-group fgrp-dept"><span class="analysis-filter-title">製作部門：</span><button class="qbtn" onclick="analysisSelectAll('dept')">全選</button><button class="qbtn" onclick="analysisClearAll('dept')">清除</button><span class="ev-pills" id="apills-dept"><button class="ev-pill pill-dept active" data-key="dept" data-val="友介" onclick="toggleAnalysisF('dept','友介',this)">友介</button><button class="ev-pill pill-dept active" data-key="dept" data-val="周邊營業" onclick="toggleAnalysisF('dept','周邊營業',this)">周邊營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="周邊編輯" onclick="toggleAnalysisF('dept','周邊編輯',this)">周邊編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="品牌授權" onclick="toggleAnalysisF('dept','品牌授權',this)">品牌授權</button><button class="ev-pill pill-dept active" data-key="dept" data-val="商品行政" onclick="toggleAnalysisF('dept','商品行政',this)">商品行政</button><button class="ev-pill pill-dept active" data-key="dept" data-val="團團購營業" onclick="toggleAnalysisF('dept','團團購營業',this)">團團購營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="基礎版營業" onclick="toggleAnalysisF('dept','基礎版營業',this)">基礎版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="基礎版編輯" onclick="toggleAnalysisF('dept','基礎版編輯',this)">基礎版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="學習版營業" onclick="toggleAnalysisF('dept','學習版營業',this)">學習版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="學習版編輯" onclick="toggleAnalysisF('dept','學習版編輯',this)">學習版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="寶寶版營業" onclick="toggleAnalysisF('dept','寶寶版營業',this)">寶寶版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="寶寶版編輯" onclick="toggleAnalysisF('dept','寶寶版編輯',this)">寶寶版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="寶寶版繼續" onclick="toggleAnalysisF('dept','寶寶版繼續',this)">寶寶版繼續</button><button class="ev-pill pill-dept active" data-key="dept" data-val="幼幼版營業" onclick="toggleAnalysisF('dept','幼幼版營業',this)">幼幼版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="幼幼版編輯" onclick="toggleAnalysisF('dept','幼幼版編輯',this)">幼幼版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="幼幼版繼續" onclick="toggleAnalysisF('dept','幼幼版繼續',this)">幼幼版繼續</button><button class="ev-pill pill-dept active" data-key="dept" data-val="快樂版營業" onclick="toggleAnalysisF('dept','快樂版營業',this)">快樂版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="快樂版編輯" onclick="toggleAnalysisF('dept','快樂版編輯',this)">快樂版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="成長版營業" onclick="toggleAnalysisF('dept','成長版營業',this)">成長版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="成長版編輯" onclick="toggleAnalysisF('dept','成長版編輯',this)">成長版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="戰略" onclick="toggleAnalysisF('dept','戰略',this)">戰略</button><button class="ev-pill pill-dept active" data-key="dept" data-val="新事業Mirafeel" onclick="toggleAnalysisF('dept','新事業Mirafeel',this)">新事業Mirafeel</button><button class="ev-pill pill-dept active" data-key="dept" data-val="月齡版營業" onclick="toggleAnalysisF('dept','月齡版營業',this)">月齡版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="月齡版編輯" onclick="toggleAnalysisF('dept','月齡版編輯',this)">月齡版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="溝通策略" onclick="toggleAnalysisF('dept','溝通策略',this)">溝通策略</button><button class="ev-pill pill-dept active" data-key="dept" data-val="物流" onclick="toggleAnalysisF('dept','物流',this)">物流</button><button class="ev-pill pill-dept active" data-key="dept" data-val="社群經營" onclick="toggleAnalysisF('dept','社群經營',this)">社群經營</button><button class="ev-pill pill-dept active" data-key="dept" data-val="繼續優惠" onclick="toggleAnalysisF('dept','繼續優惠',this)">繼續優惠</button><button class="ev-pill pill-dept active" data-key="dept" data-val="舞台劇" onclick="toggleAnalysisF('dept','舞台劇',this)">舞台劇</button><button class="ev-pill pill-dept active" data-key="dept" data-val="英語營業" onclick="toggleAnalysisF('dept','英語營業',this)">英語營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="英語編輯" onclick="toggleAnalysisF('dept','英語編輯',this)">英語編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="進階版營業" onclick="toggleAnalysisF('dept','進階版營業',this)">進階版營業</button><button class="ev-pill pill-dept active" data-key="dept" data-val="進階版編輯" onclick="toggleAnalysisF('dept','進階版編輯',this)">進階版編輯</button><button class="ev-pill pill-dept active" data-key="dept" data-val="電銷" onclick="toggleAnalysisF('dept','電銷',this)">電銷</button></span></div><div class="analysis-filter-group fgrp-ev"><span class="analysis-filter-title">事業別：</span><button class="qbtn" onclick="analysisSelectAll('ev')">全選</button><button class="qbtn" onclick="analysisClearAll('ev')">清除</button><span class="ev-pills" id="apills-ev"><button class="ev-pill pill-ev active" data-key="ev" data-val="Mirafeel" onclick="toggleAnalysisF('ev','Mirafeel',this)">Mirafeel</button><button class="ev-pill pill-ev active" data-key="ev" data-val="共通" onclick="toggleAnalysisF('ev','共通',this)">共通</button><button class="ev-pill pill-ev active" data-key="ev" data-val="周邊商品" onclick="toggleAnalysisF('ev','周邊商品',this)">周邊商品</button><button class="ev-pill pill-ev active" data-key="ev" data-val="學習商品" onclick="toggleAnalysisF('ev','學習商品',this)">學習商品</button><button class="ev-pill pill-ev active" data-key="ev" data-val="巧連智商品" onclick="toggleAnalysisF('ev','巧連智商品',this)">巧連智商品</button><button class="ev-pill pill-ev active" data-key="ev" data-val="舞台劇" onclick="toggleAnalysisF('ev','舞台劇',this)">舞台劇</button></span></div></div>
     <!-- ③ 篩選後KPI -->
     <div class="analysis-kpi-bar" id="analysisKpi">
-      <div class="analysis-kpi-item"><div class="analysis-kpi-lbl">篩選後總金額</div><div class="analysis-kpi-num" id="analysisKpiVal">51,008,652</div></div>
-      <div class="analysis-kpi-item"><div class="analysis-kpi-lbl">篩選後總件數</div><div class="analysis-kpi-num" id="analysisKpiQty">301,384</div></div>
-      <div class="analysis-kpi-item"><div class="analysis-kpi-lbl">品項數</div><div class="analysis-kpi-num" id="analysisKpiCnt">673</div></div>
+      <div class="kpi-card kpi-val">
+        <div class="kpi-card-lbl">篩選後總金額</div>
+        <div class="kpi-card-num" id="analysisKpiVal">5,101</div>
+        <div class="kpi-card-unit">萬元</div>
+      </div>
+      <div class="kpi-card kpi-qty">
+        <div class="kpi-card-lbl">篩選後總件數</div>
+        <div class="kpi-card-num" id="analysisKpiQty">301,384</div>
+        <div class="kpi-card-unit">件</div>
+      </div>
+      <div class="kpi-card kpi-cnt">
+        <div class="kpi-card-lbl">品項數</div>
+        <div class="kpi-card-num" id="analysisKpiCnt">673</div>
+        <div class="kpi-card-unit">筆</div>
+      </div>
     </div>
     <!-- ④ 品項清單 -->
     <div class="table-card">
@@ -2132,6 +2158,13 @@ function fmtVal(n){
   if(w>=10)return Math.round(w)+'萬';
   return w.toFixed(1)+'萬';
 }
+function fmtValNum(n){
+  if(n<=0)return '0';
+  var w=n/10000;
+  if(w>=100)return Math.round(w).toLocaleString('zh-TW');
+  if(w>=10)return Math.round(w)+'';
+  return w.toFixed(1);
+}
 
 function initAnalysis(){
   var nd=document.getElementById('analysisNoData');
@@ -2307,7 +2340,7 @@ function renderAnalysisFiltered(){
   var vEl=document.getElementById('analysisKpiVal');
   var qEl=document.getElementById('analysisKpiQty');
   var cEl=document.getElementById('analysisKpiCnt');
-  if(vEl)vEl.textContent=fmt(Math.round(totalVal));
+  if(vEl)vEl.textContent=fmtValNum(Math.round(totalVal));
   if(qEl)qEl.textContent=fmt(Math.round(totalQty));
   if(cEl)cEl.textContent=items.length;
 
