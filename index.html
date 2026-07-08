@@ -63,10 +63,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 /* ══════════════════════════════════════
    P1: PRODUCT GRID
 ══════════════════════════════════════ */
-.product-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+.product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
 @media(max-width:600px){.product-grid{grid-template-columns:1fr;}}
 
-.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:4px solid var(--border);}
+.product-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:10px 14px;box-shadow:var(--shadow);cursor:pointer;transition:transform .15s,box-shadow .15s;border-top:4px solid var(--border);}
 .product-card:hover{transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.1);}
 .product-card.pc-danger{border-top-color:var(--red);}
 .product-card.pc-warn{border-top-color:var(--orange);}
@@ -74,11 +74,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);font-size:14
 .product-card.pc-ok{border-top-color:var(--green);}
 
 .pc-name{font-size:21px;font-weight:700;line-height:1.4;margin-bottom:3px;color:var(--text);}
-.pc-code{font-size:14px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;}
+.pc-code{font-size:14px;color:var(--text1);font-family:var(--mono);margin-bottom:5px;}
 .pc-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;}
-.pc-stat-lbl{font-size:15px;color:var(--text3);margin-bottom:2px;}
+.pc-stat-lbl{font-size:15px;color:var(--text1);margin-bottom:2px;}
 .pc-stat-val{font-family:var(--mono);font-size:24px;font-weight:500;}
-.pc-stat-unit{font-size:14px;color:var(--text3);font-weight:400;}
+.pc-stat-unit{font-size:14px;color:var(--text1);font-weight:400;}
 
 .abc-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px;margin-top:4px;}
 .abc-cell{text-align:center;padding:5px 3px;border-radius:6px;border:1px solid var(--border);}
@@ -187,21 +187,21 @@ tbody tr:hover{background:#fafbff;}
 .empty-row td{text-align:center;color:var(--text3);padding:24px!important;}
 .section-div{height:1px;background:var(--border);margin:12px 0;}
 
-.pc-prod-block{border-top:1px solid rgba(0,0,0,.07);margin-top:12px;padding-top:11px;}
-.pc-prod-title{font-size:15px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:.04em;}
-.pc-prod-years{display:flex;flex-wrap:wrap;gap:5px 14px;margin-bottom:6px;}
-.pc-prod-yr{font-size:15px;color:var(--text3);}
+.pc-prod-block{border-top:1px solid rgba(0,0,0,.07);margin-top:8px;padding-top:8px;}
+.pc-prod-title{font-size:15px;font-weight:700;color:var(--text1);margin-bottom:4px;letter-spacing:.04em;}
+.pc-prod-years{display:flex;flex-wrap:wrap;gap:4px 10px;margin-bottom:4px;}
+.pc-prod-yr{font-size:15px;color:var(--text1);}
 .pc-prod-qty{font-size:15px;font-weight:600;color:var(--text1);margin-left:4px;}
-.pc-prod-total{font-size:15px;color:var(--text2);}
+.pc-prod-total{font-size:15px;color:var(--text1);}
 .pc-prod-total strong{color:var(--text1);}
 
 /* P1 legend bar */
 .p1-legend{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
-.p1-legend-title{font-size:16px;font-weight:700;color:var(--text2);letter-spacing:.05em;white-space:nowrap;}
+.p1-legend-title{font-size:16px;font-weight:700;color:var(--text1);letter-spacing:.05em;white-space:nowrap;}
 .p1-abc-legend{display:flex;gap:8px;align-items:center;}
-.p1-abc-leg-item{display:flex;align-items:center;gap:6px;font-size:16px;color:var(--text2);}
+.p1-abc-leg-item{display:flex;align-items:center;gap:6px;font-size:16px;color:var(--text1);}
 .p1-abc-leg-dot{width:14px;height:14px;border-radius:4px;}
-.p1-lead-note{font-size:15px;color:var(--text3);padding-left:16px;border-left:1px solid var(--border2);}
+.p1-lead-note{font-size:15px;color:var(--text1);padding-left:16px;border-left:1px solid var(--border2);}
 .p1-lead-emph{color:var(--red);font-weight:700;}
 
 /* Urgent reorder alert */
@@ -218,10 +218,10 @@ tbody tr:hover{background:#fafbff;}
 .abc-sublbl{font-size:9px;color:var(--text3);margin-top:1px;font-weight:400;}
 
 /* P1 ABC list (replaces old abc-row/cell) */
-.abc-list{display:flex;flex-direction:column;gap:5px;margin:10px 0 14px;}
-.abc-item{display:flex;align-items:center;border-radius:9px;padding:9px 14px;border:1px solid transparent;}
-.abc-item-scen{font-size:16px;font-weight:700;width:78px;flex-shrink:0;letter-spacing:.01em;}
-.abc-item-pct{font-size:13px;font-weight:400;opacity:.8;}
+.abc-list{display:flex;flex-direction:column;gap:3px;margin:6px 0 8px;}
+.abc-item{display:flex;align-items:center;border-radius:7px;padding:5px 10px;border:1px solid transparent;}
+.abc-item-scen{font-size:16px;font-weight:700;width:62px;flex-shrink:0;letter-spacing:.01em;}
+.abc-item-pct{font-size:13px;font-weight:400;}
 .abc-item-date{font-family:var(--mono);font-size:19px;font-weight:600;flex:1;text-align:center;}
 .abc-item-mo{font-family:var(--mono);font-weight:700;text-align:right;white-space:nowrap;line-height:1.1;}
 .abc-item-unit{font-size:14px;font-weight:400;margin-left:2px;}
@@ -229,7 +229,7 @@ tbody tr:hover{background:#fafbff;}
 .abc-item-bc .abc-item-mo{font-size:24px;}
 
 /* Updated stats row */
-.pc-stats-row{display:flex;gap:20px;padding-top:10px;border-top:1px solid var(--border);}
+.pc-stats-row{display:flex;gap:14px;padding-top:6px;border-top:1px solid var(--border);}
 .pc-stats-row>div{flex:1;}
 
 /* 生産動態 note */
@@ -299,16 +299,16 @@ body{font-size:20px;line-height:1.6;}
 .no-data .upload-hint{font-size:18px;}
 .page-title{font-size:17px;}
 .result-count{font-size:17px;}
-.pc-name{font-size:29px;}
-.pc-code{font-size:20px;}
-.pc-stat-lbl{font-size:21px;}
-.pc-stat-val{font-size:34px;}
-.pc-stat-unit{font-size:20px;}
+.pc-name{font-size:16px;}
+.pc-code{font-size:12px;}
+.pc-stat-lbl{font-size:13px;}
+.pc-stat-val{font-size:20px;}
+.pc-stat-unit{font-size:13px;}
 .abc-lbl{font-size:14px;}
 .abc-date{font-size:17px;}
 .abc-mo{font-size:13px;}
 .abc-sublbl{font-size:13px;}
-.warn-badge,.caution-badge,.single-month-badge,.reorder-badge{font-size:21px;}
+.warn-badge,.caution-badge,.single-month-badge,.reorder-badge{font-size:13px;}
 .detail-back{font-size:18px;}
 .detail-name{font-size:25px;}
 .detail-code{font-size:17px;}
@@ -324,27 +324,26 @@ body{font-size:20px;line-height:1.6;}
 table{font-size:18px;}
 thead th{font-size:15px;}
 .td-mono{font-size:18px;}
-.td-avgp{font-size:18px;}
 .td-code{font-size:15px;}
 .td-ev{font-size:15px;padding:3px 9px;}
 .page-btn{font-size:17px;padding:5px 13px;}
 .pag-info{font-size:15px;}
 .f-lbl{font-size:15px;}
 .pill{font-size:17px;padding:5px 15px;}
-.pc-prod-title,.pc-prod-yr,.pc-prod-qty,.pc-prod-total{font-size:21px;}
-.p1-legend-title{font-size:22px;}
-.p1-abc-leg-item{font-size:22px;}
-.p1-lead-note{font-size:21px;}
-.p1-urgent-hd{font-size:25px;}
-.p1-urgent-chip{font-size:22px;}
-.abc-item-scen{font-size:22px;}
-.abc-item-pct{font-size:18px;}
-.abc-item-date{font-size:27px;}
-.abc-item-unit{font-size:20px;}
-.abc-item-a .abc-item-mo{font-size:46px;}
-.abc-item-bc .abc-item-mo{font-size:34px;}
-.pc-note{font-size:20px;}
-.pc-note-lbl{font-size:17px;}
+.pc-prod-title,.pc-prod-yr,.pc-prod-qty,.pc-prod-total{font-size:13px;}
+.p1-legend-title{font-size:13px;}
+.p1-abc-leg-item{font-size:13px;}
+.p1-lead-note{font-size:13px;}
+.p1-urgent-hd{font-size:15px;}
+.p1-urgent-chip{font-size:13px;}
+.abc-item-scen{font-size:13px;}
+.abc-item-pct{font-size:11px;}
+.abc-item-date{font-size:15px;}
+.abc-item-unit{font-size:11px;}
+.abc-item-a .abc-item-mo{font-size:24px;}
+.abc-item-bc .abc-item-mo{font-size:18px;}
+.pc-note{font-size:13px;}
+.pc-note-lbl{font-size:12px;}
 .prod-table{font-size:18px;}
 .prod-table th{font-size:17px;}
 .prod-table tr.latest td:last-child::after{font-size:15px;}
@@ -459,7 +458,7 @@ thead th{font-size:15px;}
 .td-sell{font-size:12px;font-family:var(--mono);color:var(--text2);text-align:center;white-space:nowrap;}
 .td-sell.soon{color:#dc2626;font-weight:700;}
 .td-sell.mid{color:#d97706;font-weight:600;}
-.td-avgp{font-size:13px;font-family:var(--mono);color:#374151;text-align:right;white-space:nowrap;}
+.td-avgp{font-size:18px;font-family:var(--mono);color:#374151;text-align:right;white-space:nowrap;}
 /* Search */
 .analysis-search-wrap{display:flex;align-items:center;gap:10px;padding:10px 14px 0;}
 .analysis-search-input{flex:1;max-width:340px;padding:7px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px;font-family:var(--sans);outline:none;transition:border .15s;}
@@ -1849,8 +1848,10 @@ function getPriceCols(code){
   }
   var costPct=cost>0?Math.round(cost/price*100):0;
   var pctCls=costPct>=80?'d-red':costPct>=60?'d-orange':costPct>=40?'d-yellow':'d-green';
+  var pctDisp=cost>0&&costPct<=100?costPct+'%':'—';
+  var pctCls2=cost>0&&costPct<=100?pctCls:'d-gray';
   return'<td class="td-r td-mono">'+fmt(cost)+'</td>'
-        +'<td class="td-r td-mono '+pctCls+'">'+(cost>0?costPct+'%':'—')+'</td>'
+        +'<td class="td-r td-mono '+pctCls2+'">'+pctDisp+'</td>'
         +'<td class="td-r td-mono">'+fmt(price)+'</td>';
 }
 
