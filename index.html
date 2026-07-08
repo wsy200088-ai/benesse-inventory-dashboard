@@ -289,7 +289,7 @@ tbody tr:hover{background:#fafbff;}
 /* ── 140% 字級放大 ── */
 body{font-size:20px;line-height:1.6;}
 .logo{font-size:14px;}
-.header-title{font-size:21px;}
+.header-title{font-size:26px;}
 .data-date{font-size:15px;}
 .upload-btn{font-size:18px;padding:8px 20px;}
 .upload-status{font-size:15px;}
@@ -410,10 +410,16 @@ thead th{font-size:15px;}
 .analysis-total-num{color:#fff;font-family:var(--mono);font-weight:800;line-height:1;display:inline;}
 .analysis-total-unit{color:#93c5fd;font-weight:600;margin-left:6px;display:inline;}
 .analysis-total-cnt{color:#bfdbfe;font-size:11px;margin-top:6px;}
-/* 事業別 full-width row */
+/* 事業別 full-width row (legacy, kept for JS fallback) */
 .analysis-ev-row{margin-bottom:14px;}
 .card-ev{background:#f0fdf4;border-color:#86efac;}
 .card-ev .analysis-dim-title{color:#15803d;border-bottom-color:#4ade80;}
+/* 3-column summary layout */
+.analysis-3col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;align-items:stretch;}
+.analysis-left-stack{display:flex;flex-direction:column;gap:14px;}
+.analysis-3col .analysis-dim-card{height:100%;box-sizing:border-box;}
+.analysis-3col .card-ev .analysis-dept-scroll,
+.analysis-3col .card-dept .analysis-dept-scroll{max-height:400px;}
 /* KPI cards */
 .analysis-kpi-bar{display:flex;gap:16px;background:transparent;border:none;padding:0;margin-bottom:14px;}
 .kpi-card{flex:1;border-radius:var(--radius);padding:16px 24px;text-align:center;min-width:0;}
@@ -478,7 +484,7 @@ thead th{font-size:15px;}
 <div class="header">
   <div class="header-left">
     <span class="logo">Benesse TW</span>
-    <span class="header-title">庫存儀表板</span>
+    <span class="header-title">日商倍樂生台分公司商品庫存儀表板</span>
   </div>
   <div class="header-right">
     <span class="upload-status ok" id="upStatus">載入成功 686 筆｜2026/07/06｜14個月資料</span>
@@ -2420,11 +2426,13 @@ function renderAnalysisSummary(){
         +'<div class="analysis-total-cnt">'+items.length+' 品項</div>'
       +'</div>'
     +'</div>'
-    +'<div class="analysis-ev-row">'+evBarCard('事業別（庫存金額由高至低）',evG)+'</div>'
-    +'<div class="analysis-overview">'
-      +barCard('禮物分類',giftG,'card-gift',['#f87171','#94a3b8'])
-      +barCard('2703減價',reduceG,'card-reduce',['#fb923c','#94a3b8'])
-      +barCard('生產方式',prodG,'card-prod',['#3b82f6','#64748b','#94a3b8'])
+    +'<div class="analysis-3col">'
+      +'<div class="analysis-left-stack">'
+        +barCard('禮物分類',giftG,'card-gift',['#f87171','#94a3b8'])
+        +barCard('2703減價',reduceG,'card-reduce',['#fb923c','#94a3b8'])
+        +barCard('生產方式',prodG,'card-prod',['#3b82f6','#64748b','#94a3b8'])
+      +'</div>'
+      +evBarCard('事業別（庫存金額由高至低）',evG)
       +deptCard('製作部門（庫存金額由高至低）',deptG,'card-dept','#8b5cf6')
     +'</div>';
 }
