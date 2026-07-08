@@ -233,8 +233,12 @@ tbody tr:hover{background:#fafbff;}
 .pc-stats-row>div{flex:1;}
 
 /* 生産動態 note */
-.pc-note{margin-top:10px;padding:8px 12px;background:#f8fafc;border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:14px;color:var(--text2);line-height:1.5;}
+.pc-note{margin-top:8px;padding:6px 10px;background:#f8fafc;border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:14px;color:var(--text2);line-height:1.5;}
 .pc-note-lbl{font-size:12px;font-weight:700;color:var(--blue);margin-bottom:3px;letter-spacing:.04em;}
+.pc-note-wrap{margin-top:8px;}
+.pc-note-input{display:block;width:100%;box-sizing:border-box;padding:6px 10px;background:#f0f7ff;border:none;border-left:3px solid var(--blue);border-radius:0 6px 6px 0;font-size:13px;color:var(--text1);line-height:1.5;resize:none;font-family:var(--sans);outline:none;min-height:36px;overflow:hidden;}
+.pc-note-input:focus{background:#dbeafe;border-left-color:#1d4ed8;}
+.pc-note-input::placeholder{color:#94a3b8;font-style:italic;}
 
 /* ══════════════════════════════════════
    生產卡片
@@ -344,6 +348,7 @@ thead th{font-size:15px;}
 .abc-item-bc .abc-item-mo{font-size:18px;}
 .pc-note{font-size:13px;}
 .pc-note-lbl{font-size:12px;}
+.pc-note-input{font-size:13px;}
 .prod-table{font-size:18px;}
 .prod-table th{font-size:17px;}
 .prod-table tr.latest td:last-child::after{font-size:15px;}
@@ -910,6 +915,7 @@ document.addEventListener('DOMContentLoaded', function(){
         initEvPills();
         initMonthPills();
         initAnalysis();
+        loadLocalNotes();
         renderP1();
         renderP11();
         renderP12();
@@ -947,6 +953,7 @@ function loadFromJSON(data){
 
   initEvPills();
   initAnalysis();
+  loadLocalNotes();
   renderP1(); renderP11(); renderP12(); renderP13(); renderPuppet();
   setStatus('ok','已從快取載入 '+ALL_ITEMS.length+' 筆｜'+data.dataDate);
   document.getElementById('dlJsonBtn').style.display='';
@@ -1489,6 +1496,32 @@ function getABC(code){
 // ════════════════════════════════════════════
 // P1: LEARNING PRODUCTS
 // ════════════════════════════════════════════
+function onNoteEdit(ta){
+  var code=ta.dataset.code;
+  if(!LEARN[code])LEARN[code]={lead:6,note:'',first:'',price:0,prodCount:0,inDate:''};
+  LEARN[code].note=ta.value;
+  ta.style.height='auto';
+  ta.style.height=Math.max(36,ta.scrollHeight)+'px';
+  clearTimeout(ta._t);
+  ta._t=setTimeout(function(){
+    try{
+      var ns=JSON.parse(localStorage.getItem('bn_notes')||'{}');
+      if(ta.value)ns[code]=ta.value;else delete ns[code];
+      localStorage.setItem('bn_notes',JSON.stringify(ns));
+    }catch(e){}
+  },400);
+}
+
+function loadLocalNotes(){
+  try{
+    var ns=JSON.parse(localStorage.getItem('bn_notes')||'{}');
+    Object.keys(ns).forEach(function(code){
+      if(!LEARN[code])LEARN[code]={lead:6,note:'',first:'',price:0,prodCount:0,inDate:''};
+      LEARN[code].note=ns[code];
+    });
+  }catch(e){}
+}
+
 function renderP1(){
   var codes=LEARN_CODES.length>0?LEARN_CODES:
     ALL_ITEMS.filter(function(it){return it.ev==='學習商品';}).map(function(it){return it.code;});
@@ -1611,7 +1644,10 @@ function renderP1(){
       +'<div><div class="pc-stat-lbl">'+avg3Label+'</div><div class="pc-stat-val">'+abc.avg3.toFixed(1)+'<span class="pc-stat-unit"> 件/月</span></div></div>'
       +'</div>'
       +badge
-      +(LEARN&&LEARN[code]&&LEARN[code].note?'<div class="pc-note"><div class="pc-note-lbl">📋 生産動態</div>'+LEARN[code].note+'</div>':'')
+      +'<div class="pc-note-wrap">'
+      +'<div class="pc-note-lbl">📋 生產動態</div>'
+      +'<textarea class="pc-note-input" rows="2" data-code="'+code+'" placeholder="點此輸入生產動態備註…" oninput="onNoteEdit(this)" onclick="event.stopPropagation()">'+escHtml(LEARN&&LEARN[code]?LEARN[code].note||'':'')+'</textarea>'
+      +'</div>'
       +buildProdBlock(code)
       +'</div>';
   }).join('');
