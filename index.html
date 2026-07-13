@@ -474,6 +474,29 @@ thead th{font-size:15px;}
 .dl-filter-btn:hover{background:#f0f9ff;border-color:#3b82f6;color:#1d4ed8;}
 .dl-filter-btn svg{flex-shrink:0;}
 @media(prefers-color-scheme:dark){.dl-filter-btn{background:#1e293b;border-color:#334155;color:#cbd5e1;}.dl-filter-btn:hover{background:#1e3a5f;border-color:#60a5fa;color:#93c5fd;}}
+/* Analysis Chart Panel */
+.analysis-chart-panel{background:var(--white);border:1px solid var(--border);border-radius:12px;margin-bottom:12px;overflow:hidden;box-shadow:var(--shadow);}
+.acp-header{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);background:#fafbfc;}
+.acp-title{font-size:13px;font-weight:700;color:var(--text2);}
+.acp-metric-toggle{display:flex;border:1px solid var(--border);border-radius:7px;overflow:hidden;}
+.metric-btn{padding:4px 12px;font-size:12px;font-weight:600;border:none;background:transparent;cursor:pointer;color:var(--text3);font-family:var(--sans);transition:all .15s;}
+.metric-btn.active{background:var(--blue);color:#fff;}
+.acp-charts-row{display:flex;overflow-x:auto;align-items:flex-start;padding:8px 4px 12px;}
+.acp-chart-card{padding:10px 12px;flex-shrink:0;border-right:1px solid var(--border);}
+.acp-chart-card:last-child{border-right:none;}
+.acp-chart-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;text-align:center;white-space:nowrap;}
+/* List toggle bar */
+.list-toggle-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--white);border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:10px;user-select:none;transition:background .15s;}
+.list-toggle-bar:hover{background:var(--blue-bg);}
+/* Extra KPI risk tiles */
+.kpi-risk{background:#fef2f2;border:1.5px solid #fca5a5;}
+.kpi-risk .kpi-card-lbl{color:#991b1b;}
+.kpi-risk .kpi-card-num{color:#7f1d1d;}
+.kpi-risk .kpi-card-unit{color:#991b1b;}
+.kpi-rdx{background:#fff7ed;border:1.5px solid #fbbf24;}
+.kpi-rdx .kpi-card-lbl{color:#92400e;}
+.kpi-rdx .kpi-card-num{color:#78350f;}
+.kpi-rdx .kpi-card-unit{color:#92400e;}
 /* Reserve table */
 .reserve-expand-row{display:none;}
 .reserve-expand-row.open{display:table-row;}
@@ -866,9 +889,56 @@ thead th{font-size:15px;}
         <div class="kpi-card-num" id="analysisKpiCnt">677</div>
         <div class="kpi-card-unit">筆</div>
       </div>
+      <div class="kpi-card kpi-risk">
+        <div class="kpi-card-lbl">零銷品項金額</div>
+        <div class="kpi-card-num" id="analysisKpiRisk">—</div>
+        <div class="kpi-card-unit">萬元</div>
+      </div>
+      <div class="kpi-card kpi-rdx">
+        <div class="kpi-card-lbl">減價對象金額</div>
+        <div class="kpi-card-num" id="analysisKpiRdx">—</div>
+        <div class="kpi-card-unit">萬元</div>
+      </div>
+    </div>
+    <!-- ⑤ 篩選結果圖表摘要 -->
+    <div class="analysis-chart-panel">
+      <div class="acp-header">
+        <span class="acp-title">篩選結果圖表摘要</span>
+        <div class="acp-metric-toggle">
+          <button class="metric-btn active" id="metricValBtn" onclick="setAnalysisMetric('val')">庫存金額</button>
+          <button class="metric-btn" id="metricQtyBtn" onclick="setAnalysisMetric('qty')">件數</button>
+        </div>
+      </div>
+      <div class="acp-charts-row">
+        <div class="acp-chart-card" style="width:230px">
+          <div class="acp-chart-title">事業別</div>
+          <div style="position:relative;height:220px"><canvas id="chartAcpEv"></canvas></div>
+        </div>
+        <div class="acp-chart-card" style="width:310px">
+          <div class="acp-chart-title">製作部門 Top 10</div>
+          <div style="position:relative;height:295px"><canvas id="chartAcpDept"></canvas></div>
+        </div>
+        <div class="acp-chart-card" style="width:210px">
+          <div class="acp-chart-title">生產方式</div>
+          <div style="position:relative;height:115px"><canvas id="chartAcpProd"></canvas></div>
+        </div>
+        <div class="acp-chart-card" style="width:200px">
+          <div class="acp-chart-title">2703減價分佈</div>
+          <div style="position:relative;height:215px"><canvas id="chartAcpReduce"></canvas></div>
+        </div>
+        <div class="acp-chart-card" style="width:200px">
+          <div class="acp-chart-title">銷售動能</div>
+          <div style="position:relative;height:215px"><canvas id="chartAcpHealth"></canvas></div>
+        </div>
+      </div>
+    </div>
+    <!-- ④ 品項清單 toggle -->
+    <div class="list-toggle-bar" onclick="toggleAnalysisList()">
+      <span id="listToggleLabel" style="font-size:13px;font-weight:600;color:var(--text2)">▶ 展開品項清單（677 筆）</span>
+      <span style="font-size:11px;color:var(--text3)" id="listToggleIcon">點此展開 ›</span>
     </div>
     <!-- ④ 品項清單 -->
-    <div class="table-card">
+    <div class="table-card" id="analysisTableCard" style="display:none">
       <div class="analysis-search-wrap">
         <input class="analysis-search-input" type="text" id="analysisSearchInput" placeholder="輸入品號或品名搜尋…" oninput="onAnalysisSearch(this.value)" style="">
         <span class="analysis-search-count" id="analysisSearchCount"></span>
@@ -1177,6 +1247,7 @@ function showPage(id){
   var nb=document.getElementById('nav-'+id);
   if(pg)pg.classList.add('active');
   if(nb)nb.classList.add('active');
+  if(id==='analysis'){setTimeout(function(){Object.values(_aCharts).forEach(function(c){if(c)c.resize();});},50);}
 }
 
 function backToP1(){
@@ -2516,7 +2587,23 @@ function renderAnalysisFiltered(){
   var scEl=document.getElementById('analysisSearchCount');
   if(scEl)scEl.textContent=sq?'搜尋結果：'+items.length+' 筆':'';
 
+  // Extra KPI: zero-sales and reduce
+  var riskVal=0,rdxVal=0;
+  items.forEach(function(it){
+    if(itemAvg3(it.code)===0)riskVal+=it.val;
+    if(it.reduce)rdxVal+=it.val;
+  });
+  var rEl=document.getElementById('analysisKpiRisk');
+  var rxEl=document.getElementById('analysisKpiRdx');
+  if(rEl)rEl.textContent=fmtValNum(Math.round(riskVal));
+  if(rxEl)rxEl.textContent=fmtValNum(Math.round(rdxVal));
+
+  // Update list toggle count label
+  var ltl=document.getElementById('listToggleLabel');
+  if(ltl){var vis=document.getElementById('analysisTableCard');var open=vis&&vis.style.display!=='none';ltl.textContent=(open?'▼ ':'▶ ')+'展開品項清單（'+items.length+' 筆）';}
+
   renderAnalysisPage();
+  updateAnalysisCharts();
 }
 
 var RESERVE_DEPT_NAMES={
@@ -2657,6 +2744,109 @@ function toggleAnalysisReserve(code,btn){
 function analysisGoPage(p){
   ANALYSIS_PAGE=p;
   renderAnalysisPage();
+}
+
+// ── Analysis Chart Panel ────────────────────────
+var ANALYSIS_METRIC='val';
+var _aCharts={};
+var ANALYSIS_LIST_VISIBLE=false;
+
+function setAnalysisMetric(m){
+  ANALYSIS_METRIC=m;
+  var vb=document.getElementById('metricValBtn');
+  var qb=document.getElementById('metricQtyBtn');
+  if(vb)vb.classList.toggle('active',m==='val');
+  if(qb)qb.classList.toggle('active',m==='qty');
+  updateAnalysisCharts();
+}
+
+function toggleAnalysisList(){
+  ANALYSIS_LIST_VISIBLE=!ANALYSIS_LIST_VISIBLE;
+  var card=document.getElementById('analysisTableCard');
+  var label=document.getElementById('listToggleLabel');
+  var icon=document.getElementById('listToggleIcon');
+  if(card)card.style.display=ANALYSIS_LIST_VISIBLE?'':'none';
+  var n=ANALYSIS_LIST?ANALYSIS_LIST.length:0;
+  if(label)label.textContent=(ANALYSIS_LIST_VISIBLE?'▼ ':'▶ ')+'展開品項清單（'+n+' 筆）';
+  if(icon)icon.textContent=ANALYSIS_LIST_VISIBLE?'點此收合 ‹':'點此展開 ›';
+}
+
+function _acpFmt(v){
+  if(ANALYSIS_METRIC==='qty')return v.toLocaleString('zh-TW')+'件';
+  var w=v/10000;
+  if(w>=100)return Math.round(w).toLocaleString('zh-TW')+'萬';
+  if(w>=10)return Math.round(w)+'萬';
+  if(w>=1)return w.toFixed(1)+'萬';
+  return v.toLocaleString('zh-TW');
+}
+
+var _BAR_COLORS=['#3b82f6','#6366f1','#8b5cf6','#f59e0b','#10b981','#f97316','#ec4899','#14b8a6','#a855f7','#64748b'];
+
+function _acpHBar(id,arr){
+  var labels=arr.map(function(x){return x[0];});
+  var data=arr.map(function(x){return x[1];});
+  var colors=labels.map(function(_,i){return _BAR_COLORS[i%_BAR_COLORS.length];});
+  var cfg={
+    type:'bar',
+    data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderRadius:3,borderSkipped:false}]},
+    options:{
+      indexAxis:'y',responsive:true,maintainAspectRatio:false,animation:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+_acpFmt(c.raw);}}}},
+      scales:{
+        x:{display:false,grid:{display:false}},
+        y:{ticks:{font:{size:11,family:'Noto Sans TC,sans-serif'},color:'#64748b'},grid:{display:false},border:{display:false}}
+      }
+    }
+  };
+  if(_aCharts[id]){_aCharts[id].data.labels=labels;_aCharts[id].data.datasets[0].data=data;_aCharts[id].data.datasets[0].backgroundColor=colors;_aCharts[id].update('none');return;}
+  var ctx=document.getElementById(id);
+  if(!ctx)return;
+  _aCharts[id]=new Chart(ctx,cfg);
+}
+
+function _acpDonut(id,labels,data,colors){
+  var cfg={
+    type:'doughnut',
+    data:{labels:labels,datasets:[{data:data,backgroundColor:colors,borderWidth:2,borderColor:'#fff'}]},
+    options:{
+      responsive:true,maintainAspectRatio:false,animation:false,cutout:'62%',
+      plugins:{
+        legend:{position:'bottom',labels:{font:{size:10,family:'Noto Sans TC,sans-serif'},boxWidth:10,padding:5,color:'#64748b'}},
+        tooltip:{callbacks:{label:function(c){return ' '+_acpFmt(c.raw)+' ('+Math.round(c.raw/(c.dataset.data.reduce(function(a,b){return a+b;},0)||1)*100)+'%)';}}}
+      }
+    }
+  };
+  if(_aCharts[id]){_aCharts[id].data.labels=labels;_aCharts[id].data.datasets[0].data=data;_aCharts[id].update('none');return;}
+  var ctx=document.getElementById(id);
+  if(!ctx)return;
+  _aCharts[id]=new Chart(ctx,cfg);
+}
+
+function updateAnalysisCharts(){
+  if(typeof Chart==='undefined')return;
+  var items=ANALYSIS_LIST||[];
+  var evMap={},deptMap={},prodMap={};
+  var reduceV=0,nonReduceV=0,zeroV=0,slowV=0,normV=0;
+  items.forEach(function(it){
+    var v=ANALYSIS_METRIC==='val'?it.val:it.qty;
+    var ev=it.invEv||it.ev2||it.ev||'未知';
+    evMap[ev]=(evMap[ev]||0)+v;
+    var dept=it.dept||'未知';
+    deptMap[dept]=(deptMap[dept]||0)+v;
+    var prod=it.prodMethod||'未知';
+    prodMap[prod]=(prodMap[prod]||0)+v;
+    if(it.reduce)reduceV+=v;else nonReduceV+=v;
+    var a3=itemAvg3(it.code);
+    if(a3===0)zeroV+=v;else if(a3<=10)slowV+=v;else normV+=v;
+  });
+  var evArr=Object.entries(evMap).sort(function(a,b){return b[1]-a[1];});
+  var deptArr=Object.entries(deptMap).sort(function(a,b){return b[1]-a[1];}).slice(0,10);
+  var prodArr=Object.entries(prodMap).sort(function(a,b){return b[1]-a[1];});
+  _acpHBar('chartAcpEv',evArr);
+  _acpHBar('chartAcpDept',deptArr);
+  _acpHBar('chartAcpProd',prodArr);
+  _acpDonut('chartAcpReduce',['減價對象','非減價對象'],[reduceV,nonReduceV],['#ef4444','#3b82f6']);
+  _acpDonut('chartAcpHealth',['零銷(avg=0)','緩銷(≤10)','正常(>10)'],[zeroV,slowV,normV],['#dc2626','#f97316','#16a34a']);
 }
 
 // ── Export helpers ──────────────────────────────
