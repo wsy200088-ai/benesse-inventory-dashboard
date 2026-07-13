@@ -470,6 +470,10 @@ thead th{font-size:15px;}
 .analysis-search-input{flex:1;max-width:340px;padding:7px 14px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:13px;font-family:var(--sans);outline:none;transition:border .15s;}
 .analysis-search-input:focus{border-color:#3b82f6;}
 .analysis-search-count{font-size:12px;color:var(--text3);}
+.dl-filter-btn{margin-left:auto;display:inline-flex;align-items:center;gap:5px;padding:6px 13px;border-radius:7px;border:1.5px solid #cbd5e1;background:#fff;color:#374151;font-size:12px;font-weight:600;cursor:pointer;transition:background .15s,border-color .15s;}
+.dl-filter-btn:hover{background:#f0f9ff;border-color:#3b82f6;color:#1d4ed8;}
+.dl-filter-btn svg{flex-shrink:0;}
+@media(prefers-color-scheme:dark){.dl-filter-btn{background:#1e293b;border-color:#334155;color:#cbd5e1;}.dl-filter-btn:hover{background:#1e3a5f;border-color:#60a5fa;color:#93c5fd;}}
 /* Reserve table */
 .reserve-expand-row{display:none;}
 .reserve-expand-row.open{display:table-row;}
@@ -868,6 +872,8 @@ thead th{font-size:15px;}
       <div class="analysis-search-wrap">
         <input class="analysis-search-input" type="text" id="analysisSearchInput" placeholder="輸入品號或品名搜尋…" oninput="onAnalysisSearch(this.value)" style="">
         <span class="analysis-search-count" id="analysisSearchCount"></span>
+        <button class="dl-filter-btn" onclick="downloadAnalysisCSV()" title="下載篩選後全部品項 CSV"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8m0 0L5 7m3 3 3-3M2 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>CSV</button>
+        <button class="dl-filter-btn" onclick="downloadAnalysisXlsx()" title="下載篩選後全部品項 Excel"><svg width="13" height="13" viewBox="0 0 16 16" fill="none"><path d="M8 2v8m0 0L5 7m3 3 3-3M2 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>Excel</button>
       </div>
       <div class="table-scroll">
         <table>
@@ -2651,6 +2657,70 @@ function toggleAnalysisReserve(code,btn){
 function analysisGoPage(p){
   ANALYSIS_PAGE=p;
   renderAnalysisPage();
+}
+
+// ── Export helpers ──────────────────────────────
+function buildAnalysisRows(){
+  var last6ms=MONTHS.slice(-6);
+  var headers=['品號','品名','事業別(在庫)','庫存(件)','庫存金額(NTD)','平均庫存價','禮物','2703減價','生產方式','製作部門','月均銷量(近3月)','預估完售'];
+  last6ms.forEach(function(m){headers.push(fmtM(m)+'銷量');});
+  var rows=[headers];
+  ANALYSIS_LIST.forEach(function(it){
+    var avg3=itemAvg3(it.code);
+    var sell=calcSellout(it.qty,avg3);
+    var avgp=it.qty>0?Math.round(it.val/it.qty):'';
+    var row=[
+      it.code,
+      it.name,
+      it.invEv||it.ev2||it.ev||'',
+      it.qty,
+      it.val,
+      avgp,
+      it.gift?'是':'否',
+      it.reduce?'是':'否',
+      it.prodMethod||'',
+      it.dept||'',
+      avg3>0?avg3.toFixed(1):0,
+      sell.txt
+    ];
+    var s6=item6M(it.code);
+    s6.forEach(function(v){row.push(v);});
+    rows.push(row);
+  });
+  return rows;
+}
+
+function downloadAnalysisCSV(){
+  var rows=buildAnalysisRows();
+  var bom='﻿';
+  var csv=bom+rows.map(function(r){
+    return r.map(function(v){
+      var s=String(v==null?'':v);
+      if(s.indexOf(',')>=0||s.indexOf('"')>=0||s.indexOf('\n')>=0)s='"'+s.replace(/"/g,'""')+'"';
+      return s;
+    }).join(',');
+  }).join('\r\n');
+  var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');
+  var ts=(LATEST_MONTH||'').slice(2)||'';
+  a.href=url; a.download='在庫分析_篩選結果_'+ts+'.csv';
+  document.body.appendChild(a); a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url);},1000);
+}
+
+function downloadAnalysisXlsx(){
+  if(typeof XLSX==='undefined'){alert('Excel 功能需要先上傳 Excel 檔案以載入 XLSX 函式庫。請先上傳後再試。');return;}
+  var rows=buildAnalysisRows();
+  var ws=XLSX.utils.aoa_to_sheet(rows);
+  // Column widths
+  var wscols=[{wch:16},{wch:30},{wch:14},{wch:10},{wch:14},{wch:12},{wch:6},{wch:8},{wch:10},{wch:14},{wch:14},{wch:12}];
+  for(var i=0;i<6;i++)wscols.push({wch:12});
+  ws['!cols']=wscols;
+  var wb=XLSX.utils.book_new();
+  var ts=(LATEST_MONTH||'').slice(2)||'';
+  XLSX.utils.book_append_sheet(wb,ws,'在庫分析');
+  XLSX.writeFile(wb,'在庫分析_篩選結果_'+ts+'.xlsx');
 }
 </script>
 
