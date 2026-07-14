@@ -484,7 +484,7 @@ thead th{font-size:15px;}
 .acp-charts-row{display:flex;overflow-x:auto;align-items:flex-start;padding:8px 4px 12px;}
 .acp-chart-card{padding:10px 12px;flex-shrink:0;border-right:1px solid var(--border);}
 .acp-chart-card:last-child{border-right:none;}
-.acp-chart-title{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;text-align:center;white-space:nowrap;}
+.acp-chart-title{font-size:12px;font-weight:700;color:var(--text);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;text-align:center;white-space:nowrap;}
 /* List toggle bar */
 .list-toggle-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--white);border:1px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:10px;user-select:none;transition:background .15s;}
 .list-toggle-bar:hover{background:var(--blue-bg);}
@@ -910,25 +910,25 @@ thead th{font-size:15px;}
         </div>
       </div>
       <div class="acp-charts-row">
-        <div class="acp-chart-card" style="width:230px">
+        <div class="acp-chart-card" style="width:290px">
           <div class="acp-chart-title">事業別</div>
-          <div style="position:relative;height:220px"><canvas id="chartAcpEv"></canvas></div>
+          <div style="position:relative;height:230px"><canvas id="chartAcpEv"></canvas></div>
         </div>
-        <div class="acp-chart-card" style="width:310px">
+        <div class="acp-chart-card" style="width:390px">
           <div class="acp-chart-title">製作部門 Top 10</div>
-          <div style="position:relative;height:295px"><canvas id="chartAcpDept"></canvas></div>
+          <div style="position:relative;height:320px"><canvas id="chartAcpDept"></canvas></div>
         </div>
-        <div class="acp-chart-card" style="width:210px">
+        <div class="acp-chart-card" style="width:250px">
           <div class="acp-chart-title">生產方式</div>
-          <div style="position:relative;height:115px"><canvas id="chartAcpProd"></canvas></div>
+          <div style="position:relative;height:125px"><canvas id="chartAcpProd"></canvas></div>
         </div>
-        <div class="acp-chart-card" style="width:200px">
+        <div class="acp-chart-card" style="width:220px">
           <div class="acp-chart-title">2703減價分佈</div>
-          <div style="position:relative;height:215px"><canvas id="chartAcpReduce"></canvas></div>
+          <div style="position:relative;height:230px"><canvas id="chartAcpReduce"></canvas></div>
         </div>
-        <div class="acp-chart-card" style="width:200px">
+        <div class="acp-chart-card" style="width:220px">
           <div class="acp-chart-title">銷售動能</div>
-          <div style="position:relative;height:215px"><canvas id="chartAcpHealth"></canvas></div>
+          <div style="position:relative;height:230px"><canvas id="chartAcpHealth"></canvas></div>
         </div>
       </div>
     </div>
@@ -2794,7 +2794,7 @@ function _acpHBar(id,arr){
       plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return ' '+_acpFmt(c.raw);}}}},
       scales:{
         x:{display:false,grid:{display:false}},
-        y:{ticks:{font:{size:11,family:'Noto Sans TC,sans-serif'},color:'#64748b'},grid:{display:false},border:{display:false}}
+        y:{ticks:{font:{size:14,family:'Noto Sans TC,sans-serif'},color:'#1a1f2e'},grid:{display:false},border:{display:false}}
       }
     }
   };
@@ -2811,7 +2811,7 @@ function _acpDonut(id,labels,data,colors){
     options:{
       responsive:true,maintainAspectRatio:false,animation:false,cutout:'62%',
       plugins:{
-        legend:{position:'bottom',labels:{font:{size:10,family:'Noto Sans TC,sans-serif'},boxWidth:10,padding:5,color:'#64748b'}},
+        legend:{position:'bottom',labels:{font:{size:13,family:'Noto Sans TC,sans-serif'},boxWidth:12,padding:6,color:'#1a1f2e'}},
         tooltip:{callbacks:{label:function(c){return ' '+_acpFmt(c.raw)+' ('+Math.round(c.raw/(c.dataset.data.reduce(function(a,b){return a+b;},0)||1)*100)+'%)';}}}
       }
     }
