@@ -392,7 +392,7 @@ line_replace(lines, 'var PRICES=',
     f"var PRICES={js(PRICES)};")
 
 # GIFT_CODES (no BAKE marker)
-gc_list = list(GIFT_CODES)
+gc_list = sorted(GIFT_CODES)
 line_replace(lines, 'var GIFT_CODES=',
     f"var GIFT_CODES=new Set({js(gc_list)});")
 
