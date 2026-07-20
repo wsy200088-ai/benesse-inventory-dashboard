@@ -967,6 +967,31 @@ thead th{font-size:15px;}
 // AUTO-LOAD FROM data.json ON PAGE START
 // ════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', function(){
+  // 燒錄資料的基準日期（每次更新 Excel 時同步更新）
+  var BAKED_DATE = document.getElementById('dataDate').textContent.replace('在庫日期：','');
+
+  function renderBaked(){
+    if(ALL_ITEMS.length>0||Object.keys(PRODUCTION).length>0){
+      ['p1','p11','p12','p13'].forEach(function(id){
+        var nd=document.getElementById(id+'NoData');
+        var ct=document.getElementById(id+'Content');
+        if(nd)nd.style.display='none';
+        if(ct)ct.style.display='';
+      });
+      initEvPills();
+      initMonthPills();
+      initAnalysis();
+      loadLocalNotes();
+      renderP1();
+      renderP11();
+      renderP12();
+      renderP13();
+      renderPuppet();
+    } else {
+      document.getElementById('dataDate').textContent='尚未上傳資料';
+    }
+  }
+
   fetch('data.json?_=' + Date.now())
     .then(function(res){
       if(!res.ok) throw new Error('no data.json');
@@ -974,33 +999,20 @@ document.addEventListener('DOMContentLoaded', function(){
     })
     .then(function(data){
       if(data && data.allItems && data.allItems.length){
-        loadFromJSON(data);
+        // 若 data.json 比燒錄資料舊（CDN快取未更新），優先用燒錄資料
+        var fetchedDate = data.dataDate || '';
+        if(BAKED_DATE && fetchedDate < BAKED_DATE){
+          renderBaked();
+        } else {
+          loadFromJSON(data);
+        }
       } else {
         document.getElementById('dataDate').textContent='尚未上傳資料';
       }
     })
     .catch(function(){
       // data.json 讀不到（本機模式）→ 用燒錄資料直接渲染
-      if(ALL_ITEMS.length>0||Object.keys(PRODUCTION).length>0){
-        // 顯示各頁籤內容（移除 NoData 遮罩）
-        ['p1','p11','p12','p13'].forEach(function(id){
-          var nd=document.getElementById(id+'NoData');
-          var ct=document.getElementById(id+'Content');
-          if(nd)nd.style.display='none';
-          if(ct)ct.style.display='';
-        });
-        initEvPills();
-        initMonthPills();
-        initAnalysis();
-        loadLocalNotes();
-        renderP1();
-        renderP11();
-        renderP12();
-        renderP13();
-        renderPuppet();
-      } else {
-        document.getElementById('dataDate').textContent='尚未上傳資料';
-      }
+      renderBaked();
     });
 });
 
