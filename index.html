@@ -536,7 +536,7 @@ thead th{font-size:15px;}
 <div class="nav-bar">
   <button class="nav-btn active" id="nav-p1" onclick="showPage('p1')">📊 P1 學習商品主頁</button>
   <button class="nav-btn" id="nav-detail" onclick="showPage('detail')" style="display:none">📋</button>
-  <button class="nav-btn" id="nav-p11" onclick="showPage('p11')">📦 P11 其他商品</button>
+  <button class="nav-btn" id="nav-p11" onclick="showPage('p11')">📦 所有商品</button>
   <button class="nav-btn" id="nav-p12" onclick="showPage('p12')">⚠️ P12 有庫無銷</button>
   <button class="nav-btn" id="nav-p13" onclick="showPage('p13')">🔍 P13 滯銷篩選</button>
   <button class="nav-btn" id="nav-puppet" onclick="showPage('puppet')">🐯 巧虎手偶</button>
@@ -2109,10 +2109,8 @@ function updateEvSummary(list){
 
 function renderP11(){
   var q=(document.getElementById('p11Search').value||'').trim().toLowerCase();
-  var learnSet=new Set(LEARN_CODES);
 
   P11_LIST=ALL_ITEMS.filter(function(it){
-    if(learnSet.size>0&&learnSet.has(it.code))return false;
     if(!evMatchItem(it))return false;
     if(q&&it.name.toLowerCase().indexOf(q)<0&&it.code.toLowerCase().indexOf(q)<0)return false;
     if(P11_INV_EV!==null&&it.invEv!==P11_INV_EV)return false;
