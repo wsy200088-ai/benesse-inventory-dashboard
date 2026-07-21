@@ -1732,6 +1732,7 @@ function renderP1(){
       +'<div><div class="pc-stat-lbl">庫存</div><div class="pc-stat-val">'+fmt(abc.stock)+'<span class="pc-stat-unit"> 件</span></div></div>'
       +'<div><div class="pc-stat-lbl">'+avg3Label+'</div><div class="pc-stat-val">'+abc.avg3.toFixed(1)+'<span class="pc-stat-unit"> 件/月</span></div></div>'
       +'</div>'
+      +buildPriceRow(code)
       +badge
       +'<div class="pc-note-wrap">'
       +'<div class="pc-note-lbl">📋 生產動態</div>'
@@ -1770,6 +1771,23 @@ function buildProdBlock(code){
     +'累計 <strong>'+fmt(totalProd)+'</strong>件'
     +'　出庫率 <strong>'+rate+'%</strong>'
     +'</div>'
+    +'</div>';
+}
+
+function buildPriceRow(code){
+  var price=PRICES[code]||0;
+  var cost=INV[code]?INV[code].cost:0;
+  if(price<=0&&cost<=0)return '';
+  var costPct=(price>0&&cost>0)?Math.round(cost/price*100):0;
+  var pctCls=costPct>=80?'d-red':costPct>=60?'d-orange':costPct>=40?'d-yellow':'d-green';
+  var priceDisp=price>0?fmt(price):'—';
+  var costDisp=cost>0?fmt(Math.round(cost)):'—';
+  var pctDisp=(costPct>0&&costPct<=100)?costPct+'%':'—';
+  var pctColor=(costPct>0&&costPct<=100)?({d_red:'#dc2626',d_orange:'#ea580c',d_yellow:'#ca8a04',d_green:'#16a34a'})[pctCls.replace('-','_')]:'inherit';
+  return '<div class="pc-stats-row">'
+    +'<div><div class="pc-stat-lbl">售價</div><div class="pc-stat-val">'+priceDisp+'<span class="pc-stat-unit"> 元</span></div></div>'
+    +'<div><div class="pc-stat-lbl">原價</div><div class="pc-stat-val">'+costDisp+'<span class="pc-stat-unit"> 元</span></div></div>'
+    +'<div><div class="pc-stat-lbl">原價率</div><div class="pc-stat-val" style="color:'+pctColor+'">'+pctDisp+'</div></div>'
     +'</div>';
 }
 
