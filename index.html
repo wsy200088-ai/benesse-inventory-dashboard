@@ -579,6 +579,9 @@ thead th{font-size:15px;}
       <div><div class="dkpi-lbl">目前庫存</div><div><span class="dkpi-val" id="dStock">2,053</span><span class="dkpi-unit"> 件</span></div></div>
       <div><div class="dkpi-lbl">近3月均</div><div><span class="dkpi-val" id="dAvg">53.0</span><span class="dkpi-unit"> 件/月</span></div></div>
       <div><div class="dkpi-lbl">前一年累計</div><div><span class="dkpi-val" id="dYear">772</span><span class="dkpi-unit"> 件</span></div></div>
+      <div><div class="dkpi-lbl">售價</div><div><span class="dkpi-val" id="dPrice">—</span><span class="dkpi-unit"> 元</span></div></div>
+      <div><div class="dkpi-lbl">原價</div><div><span class="dkpi-val" id="dCost">—</span><span class="dkpi-unit"> 元</span></div></div>
+      <div><div class="dkpi-lbl">原價率</div><div><span class="dkpi-val" id="dCostPct">—</span></div></div>
     </div>
   </div>
   <div class="charts-grid">
@@ -1811,6 +1814,21 @@ function showDetail(code,name){
   document.getElementById('di-avg3').textContent=abc.avg3.toFixed(1)+' 件/月';
   document.getElementById('di-avg6').textContent=avg6.toFixed(1)+' 件/月';
   document.getElementById('di-year').textContent=fmt(yearTotal)+' 件';
+
+  // ── 售價 / 原價 / 原價率 ──
+  var _price=PRICES[code]||0;
+  var _cost=INV[code]?INV[code].cost:0;
+  var _pct=(_price>0&&_cost>0)?Math.round(_cost/_price*100):0;
+  document.getElementById('dPrice').textContent=_price>0?fmt(_price):'—';
+  document.getElementById('dCost').textContent=_cost>0?fmt(Math.round(_cost)):'—';
+  var _pctEl=document.getElementById('dCostPct');
+  if(_pct>0&&_pct<=100){
+    _pctEl.textContent=_pct+'%';
+    _pctEl.style.color=_pct>=80?'var(--red)':_pct>=60?'var(--orange)':_pct>=40?'var(--yellow)':'var(--green)';
+  } else {
+    _pctEl.textContent='—';
+    _pctEl.style.color='';
+  }
 
   function setABCInfo(pre,avg,mo,date){
     document.getElementById('di'+pre+'-avg').textContent=avg.toFixed(1)+' 件/月';
